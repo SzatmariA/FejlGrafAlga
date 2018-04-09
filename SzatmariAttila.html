@@ -66,6 +66,7 @@ uniform sampler2D texImage;
 	var spinner;
 	var korutMesh;
 	var holegBallonGroup;
+	var sinusSpeed = 0;
 	
 	function loader() {
     var loader = new THREE.JSONLoader();
@@ -435,10 +436,22 @@ uniform sampler2D texImage;
 
         document.body.appendChild( stats.domElement );
     }
+	
+	//*******************Vonat mozgasanak animalasara**************/
+	function sinusSpeedChanger(szog){
+		var radians = szog * (Math.PI /180);
+		return Math.sin(radians);
+	}
+	
 
     var render = function () {
         stats.update();
         time = time + 0.25;
+		if (sinusSpeed <= 170)
+			sinusSpeed += 5;
+		else
+			sinusSpeed = 0;
+		
 
 		/**************Kocsik animalasa**********************/
 	   if(carMesh.position.z > -35)
@@ -459,8 +472,9 @@ uniform sampler2D texImage;
 		
 		
 		/**************Holegballon sregan mozgasa**************/
-		holegBallonGroup.position.z -= Math.PI/4;
-		holegBallonGroup.position.x -= Math.PI/4;
+		
+		holegBallonGroup.position.z -= sinusSpeedChanger(sinusSpeed);
+		holegBallonGroup.position.x -= sinusSpeedChanger(sinusSpeed);
 		
 	   
         requestAnimationFrame( render );
