@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8>
+    <title>Three.js Object Tester</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { width: 100%; height: 100% }
+    </style>
+</head>
+
+<body onload="loader()">
+<script src="js/three.min.js"></script>
+<script src="js/stats.min.js"></script>
+<script src="js/TrackballControls.js"></script>
+<script src="js/spin.js"></script>
+<script src="js/ThreeBSP.js"></script>
+
+<script id="vertexShader" type="x-shader/x-vertex">
+uniform float time;
+uniform float magnitude;
+uniform float freq;
+varying vec3  vNormal;
+varying vec2  vUv;
+
+	void main()	{
+		vec3 newPosition = position;
+		vNormal = normal;
+		vUv = uv;
+	    newPosition.z = magnitude * (sin(freq * position.x + time) + cos(freq*position.y + time));
+		gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+
+	}
+</script>
+
+<script id="fragmentShader" type="x-shader/x-fragment">
+
+varying vec3     vNormal;
+varying vec2     vUv;
+uniform sampler2D texImage;
+	void main()	{
+		gl_FragColor = texture2D(texImage, vUv);
+		//${THREE.ShaderChunk[ "fog_fragment" ]};
+	}
+
+</script>
+
+<script>
+    // Globális változók
+    var WIDTH, HEIGHT, aspectRatio;
+    var renderer;
+    var scene = new THREE.Scene();
+	var camera;
+    var material;
+    var stats;
+    var controls;
+    var waterGeometry, groundGeometry;
+    var groundGeometry2, groundGeometry3;
+    var groundGeometry4;
+    var roadGeometry, roadGeometry2;
+    var korutMesh, carMesh, carMesh2;
+    var time, dLightPositinZ = 0;
+	var dLight;
+	var meshLoaded;
+	var textureLoader = new THREE.TextureLoader();
+	var spinner;
+	var korutMesh;
+	var holegBallonGroup;
+	
+	function loader() {
+    var loader = new THREE.JSONLoader();
+    loader.load( 'Assets/KorutVers69420.json', function ( geometry ) {
+			
+			var texture = textureLoader.load( 'Assets/download.jpg' );
+			var material = new THREE.MeshPhongMaterial();
+            material.map = texture;
+            korutMesh = new THREE.Mesh( geometry, material );
+            korutMesh.updateMatrix();
+            geometry.applyMatrix( korutMesh.matrix );
+            korutMesh.rotation.set( 0, 0, 0 );
+            korutMesh.updateMatrix();
+			korutMesh.position.x = 27
+            korutMesh.scale.set( 3, 3, 3 );
+            geometry.computeVertexNormals();
+            scene.add(korutMesh );
+			loader2();
+		});
+	}
+	
+	function loader2() {
+    var loader = new THREE.JSONLoader();
+    loader.load( 'Assets/BumperCar.json', function ( geometry ) {
+			
+			var material = new THREE.MeshPhongMaterial( { color: 0x000000, wireframe: false, side: THREE.DoubleSide } );
+			
+			carMesh = new THREE.Mesh( geometry, material );
+			carMesh.scale.set( 0.5,0.5,0.5 );
+			init();
+		});
+	}
+	
+
+    function init() {
+        // Böngésző ablakméret lekérése és méretarány számítása
+        HEIGHT = window.innerHeight;
+        WIDTH = window.innerWidth;
+        aspectRatio = WIDTH / HEIGHT;
+        time = 0;
+
+        // Renderer létrehozása és DOM-hoz adása
+        renderer = new THREE.WebGLRenderer( { antialias: true } );
+        renderer.setSize( WIDTH, HEIGHT );
+        renderer.setClearColor( 0xC0C0C0 );
+        document.body.appendChild( renderer.domElement );
+
+        // Színtér létrehozása
+        //scene = new THREE.Scene();
+
+        // Kamera létrehozása és vetítési paramétereinek beállítása
+        camera = new THREE.PerspectiveCamera( 75, aspectRatio, 0.1, 1000 );
+        camera.position.set( 10, 40, 80 );
+        camera.lookAt( scene.position );
+		
+		holegBallonGroup = new THREE.Object3D();
+		
+		/**************************Textúrák***************************************/
+		var roadTexture =  textureLoader.load( 'Assets/44.jpg' );
+		
+		var waterTextureLoader = new THREE.TextureLoader();
+		var waterTexture = waterTextureLoader.load( 'Assets/water.jpg' );
+		var groundTextureLoader = new THREE.TextureLoader();
+		var groundTexture = groundTextureLoader.load( 'Assets/grass.jpg' );
+		groundTexture.magFilter = THREE.NearestFilter;
+		groundTexture.minFilter = THREE.NearestFilter;
+		
+		roadTexture.magFilter = THREE.NearestFilter;
+		roadTexture.minFilter = THREE.NearestFilter;
+		waterTexture.magFilter = THREE.NearestFilter;
+		waterTexture.minFilter = THREE.NearestFilter;
+		
+		
+
+        // Talaj
+        waterGeometry = new THREE.PlaneGeometry( 20, 80, 20, 20 );
+        groundGeometry = new THREE.PlaneGeometry( 40, 80, 20, 20 );
+        groundGeometry2 = new THREE.PlaneGeometry( 20, 20, 20, 20 );
+        groundGeometry3 = new THREE.PlaneGeometry( 20, 20, 20, 20 );
+        groundGeometry4 = new THREE.PlaneGeometry( 20, 20, 20, 20 );
+        roadGeometry = new THREE.PlaneGeometry( 5, 80, 20, 20 );
+        roadGeometry2 = new THREE.PlaneGeometry( 5, 80, 20, 20 );
+		
+		
+        
+        var groundMaterial = new THREE.MeshBasicMaterial( {
+                    
+                    wireframe: false,
+                    side: THREE.DoubleSide
+                } );
+		groundMaterial.map = groundTexture;
+		var roadMaterial = new THREE.MeshBasicMaterial( {
+                    
+                    wireframe: false,
+                    side: THREE.DoubleSide
+                } );
+		roadMaterial.map = roadTexture;
+        
+
+		
+		
+        material = new THREE.ShaderMaterial( {
+            uniforms: {
+                time: { value: 5.0 },
+                magnitude: { value: 0.25 },
+                freq: { value: 2.0 },
+				texImage: {value: waterTexture},
+				
+				
+            },
+            wireframe: false,
+            side: THREE.DoubleSide,
+            vertexShader: document.getElementById( 'vertexShader' ).textContent,
+            fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+        });
+		material.uniforms.shininess = 70;
+		/**************************Textúrák vége***************************************/
+		
+		var groundMesh = new THREE.Mesh( groundGeometry, groundMaterial );
+		var groundMesh4 = new THREE.Mesh( groundGeometry4, groundMaterial );
+        var waterMesh = new THREE.Mesh( waterGeometry, material );
+        var roadMesh = new THREE.Mesh( roadGeometry, roadMaterial );
+        var roadMesh2 = new THREE.Mesh( roadGeometry2, roadMaterial );
+		
+		carMesh2 = carMesh.clone();
+		
+		
+		/********************Latte*******************************/
+		var step = 0;
+
+        // the points group
+        var spGroup;
+        // the mesh
+        var latheMesh;
+
+        generatePoints(12, 2, 2 * Math.PI);
+
+		
+        function generatePoints(segments, phiStart, phiLength) {
+            /*A holegballont leiro sinusos fuggveny es ami ezt 360°-ba kihuzza*/
+            var points = [];
+            var height = 5;
+            var count = 28;
+            for (var i = 0; i < count; i++) {
+                points.push(new THREE.Vector2( Math.sin(i*0.1058) * 20, ( i*1.5 - count ) + count / 2)); 
+            }
+
+            spGroup = new THREE.Object3D();
+            var material = new THREE.MeshBasicMaterial({ transparent: false});
+            points.forEach(function (point) {
+
+                var spGeom = new THREE.SphereGeometry(0.2);
+                var spMesh = new THREE.Mesh(spGeom, material);
+                p = new THREE.Vector3(point.x, point.y,0);
+                spMesh.position.copy(p);
+				
+                spGroup.add(spMesh);
+            });
+            
+		
+		
+			var latheGeometry = new THREE.LatheGeometry(points, 10, 0, 6.3);
+            latheMesh = createMeshForLatte(latheGeometry);
+			latheMesh.rotation.x = THREE.Math.degToRad(180);
+			latheMesh.scale.set(0.2,0.2,0.2);
+			latheMesh.position.y = 30;
+			var balloonTexture = textureLoader.load( 'Assets/balloon.jpg' ); //Ez nem akart mukodni
+			latheMesh.map = balloonTexture;
+            scene.add(latheMesh);
+			}
+			
+			
+			function createMeshForLatte(geom) {
+
+            // assign two materials
+            //  var meshMaterial = new THREE.MeshBasicMaterial({color:0x00ff00, transparent:true, opacity:0.6});
+            var meshMaterial = new THREE.MeshNormalMaterial();
+            meshMaterial.side = THREE.DoubleSide;
+            var wireFrameMat = new THREE.MeshBasicMaterial();
+            wireFrameMat.wireframe = true;
+
+            // create a multimaterial
+            var mesh = THREE.SceneUtils.createMultiMaterialObject(geom, [meshMaterial, wireFrameMat]);
+
+            return mesh;
+        }
+		holegBallonGroup.add(latheMesh);
+		/******************************End of Latte**********************************/
+		
+		
+		
+		/*****************************Binary operation*******************************/
+		
+		
+		var cube = createMesh(new THREE.BoxGeometry(3, 3, 3));
+		
+		var cube2 = createMesh(new THREE.BoxGeometry(2.5, 2.5, 2.5));
+		cube.position.x = 1;
+
+       
+
+        var result;
+		
+
+        
+		var step = 0;
+		redrawResult();
+
+        function redrawResult() {
+
+            showSpinner();
+			setTimeout(function() {
+			
+            var cubeBSP = new ThreeBSP(cube);
+            
+            var cube2BSP = new ThreeBSP(cube2);
+			
+			var resultBSP = cubeBSP.subtract(cube2BSP);
+			
+			result = resultBSP.toMesh();
+                    result.geometry.computeFaceNormals();
+                    result.geometry.computeVertexNormals();
+                    scene.add(result);
+					hideSpinner(spinner);
+			result.rotation.z = -1.0 * THREE.Math.degToRad( 90 );
+			result.position.y = 22;
+			result.position.x = 0;
+			holegBallonGroup.add(result);
+			}, 200);
+			
+            
+        }
+
+        function createMesh(geom) {
+
+            // assign two materials
+            var meshMaterial = new THREE.MeshNormalMaterial();
+            meshMaterial.side = THREE.DoubleSide;
+            var wireFrameMat = new THREE.MeshBasicMaterial({transparency: true, opacity: 0.5, wireframeLinewidth: 0.5});
+            wireFrameMat.wireframe = true;
+
+            // create a multimaterial
+            var mesh = new THREE.Mesh(geom, wireFrameMat);
+
+            return mesh;
+        }
+
+
+        function showSpinner() {
+
+            var opts = {
+                lines: 13, // The number of lines to draw
+                length: 20, // The length of each line
+                width: 10, // The line thickness
+                radius: 30, // The radius of the inner circle
+                corners: 1, // Corner roundness (0..1)
+                rotate: 0, // The rotation offset
+                direction: 1, // 1: clockwise, -1: counterclockwise
+                color: '#000', // #rgb or #rrggbb or array of colors
+                speed: 1, // Rounds per second
+                trail: 60, // Afterglow percentage
+                shadow: false, // Whether to render a shadow
+                hwaccel: false, // Whether to use hardware acceleration
+                className: 'spinner', // The CSS class to assign to the spinner
+                zIndex: 2e9, // The z-index (defaults to 2000000000)
+                top: 'auto', // Top position relative to parent in px
+                left: 'auto' // Left position relative to parent in px
+            };
+            var target = document.getElementById('WebGL-output');
+            spinner = new Spinner(opts).spin(target);
+            return spinner;
+        }
+
+        function hideSpinner(spinner) {
+            spinner.stop();
+        }
+		
+
+		/***************************End of Binary operation**************************/
+		
+		/***********Meshek poziciojanak, rotaciojanak es scalejeinek beallitasa********/
+		
+		holegBallonGroup.position.x = 80;
+		holegBallonGroup.position.z = 80;
+		
+		
+		scene.add(holegBallonGroup);
+		
+        waterMesh.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+        groundMesh.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		groundMesh.position.x = 29.9;
+		//groundMesh2.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		//groundMesh2.position.z = 19.9;
+		//groundMesh3.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		//groundMesh3.position.z = -19.9;
+		roadMesh.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		roadMesh.position.x = 31;
+		roadMesh.position.y = 0.1;
+		roadMesh2.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		roadMesh2.position.x = 25;
+		roadMesh2.position.y = 0.1;
+		carMesh.position.x= 32;
+		carMesh.position.z = 38;
+		carMesh.position.y = 1;
+		carMesh.rotation.y = 1.0 * THREE.Math.degToRad( 90 );
+		
+		carMesh2.position.x = 24.5;
+		carMesh2.position.z = -38;
+		carMesh2.position.y = 1;
+		carMesh2.rotation.y = -1.0 * THREE.Math.degToRad( 90 );
+		
+		//korutMesh.position.x = 27;
+		/************************Meshek vege********************************/
+		
+		
+		/**************************fenyek*********************************/
+		dLight = new THREE.DirectionalLight( 0x00ffff, 1 );
+		dLight.position.set( 0, 0, dLightPositinZ);
+		dLight.target = korutMesh;
+		scene.add( dLight );
+		var ambientLight = new THREE.AmbientLight( 0xFDB813, 1 );
+		scene.add( ambientLight );
+		scene.fog = new THREE.FogExp2( 0xdfddd6, 0.01 );
+		/**************************fenyek vege*********************************/
+		
+        scene.add( groundMesh );
+        scene.add( carMesh );
+		scene.add(carMesh2);
+		
+        scene.add( roadMesh );
+        scene.add( roadMesh2 );
+        
+        scene.add( waterMesh );
+		
+
+        // Az ablak későbbi átméretezése esetén visszahívható függvény megadása
+        window.addEventListener( 'resize', handleWindowResize, false );
+
+        // Kamera vezérlés
+        controls = new THREE.TrackballControls( camera, renderer.domElement );
+        controls.rotateSpeed = 5.0;
+        controls.panSpeed = 1.0;
+
+        addStatsObject();
+        // Első képkocka rajzolása
+        render();
+    }
+
+    function handleWindowResize() {
+        // Az ablak átméretezése esetén a kamera vetítési paraméterek újraszámolása
+        HEIGHT = window.innerHeight;
+        WIDTH = window.innerWidth;
+        console.log( 'WIDTH=' + WIDTH + '; HEIGHT=' + HEIGHT );
+        renderer.setSize( WIDTH, HEIGHT );
+        aspectRatio = WIDTH / HEIGHT;
+        camera.aspect = aspectRatio;
+        camera.updateProjectionMatrix();
+    }
+
+    function addStatsObject() {
+        stats = new Stats();
+        stats.setMode(0);
+
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.left = '0px';
+        stats.domElement.style.top = '0px';
+
+        document.body.appendChild( stats.domElement );
+    }
+
+    var render = function () {
+        stats.update();
+        time = time + 0.25;
+
+		/**************Kocsik animalasa**********************/
+	   if(carMesh.position.z > -35)
+			carMesh.position.z -= Math.PI/4.5;
+		else 
+			carMesh.position.z = 38;
+	   if(carMesh2.position.z < 35)
+			carMesh2.position.z += Math.PI/5;
+		else 
+			carMesh2.position.z = -38;
+	   /*********************Kocsik animalasa********************/
+	   
+	   /*****Nap gyenge probalkozasa**************************/
+	   if(dLightPositinZ < 360){ 
+			dLightPositinZ += 5;
+			dLight.position.set(0,0, dLightPositinZ);
+		}
+		
+		
+		/**************Holegballon sregan mozgasa**************/
+		holegBallonGroup.position.z -= Math.PI/4;
+		holegBallonGroup.position.x -= Math.PI/4;
+		
+	   
+        requestAnimationFrame( render );
+
+       material.uniforms.time.value = time;
+
+
+        // Újabb képkocka rajzolásának kérése.
+        // Maximálisan 60 FPS-t biztosít a rendszer.
+
+        // Kamera vezérlés
+        controls.update();
+
+
+
+        // 3D -> 2D vetített kép kiszámítása.
+        // scene 3D színtér képe a camera kamera szemszögéből.
+        renderer.render( scene, camera );
+    };
+
+</script>
+</body>
+</html>
