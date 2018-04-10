@@ -67,21 +67,25 @@ uniform sampler2D texImage;
 	var korutMesh;
 	var holegBallonGroup;
 	var sinusSpeed = 0;
+	var trainMesh;
+	
 	
 	function loader() {
     var loader = new THREE.JSONLoader();
-    loader.load( 'Assets/KorutVers69420.json', function ( geometry ) {
+    loader.load( 'Assets/TheKorhid.json', function ( geometry ) {
 			
-			var texture = textureLoader.load( 'Assets/download.jpg' );
-			var material = new THREE.MeshPhongMaterial();
+			var texture = textureLoader.load( 'Assets/roadTexture.jpg' );
+			var material = new THREE.MeshLambertMaterial();
             material.map = texture;
             korutMesh = new THREE.Mesh( geometry, material );
             korutMesh.updateMatrix();
             geometry.applyMatrix( korutMesh.matrix );
-            korutMesh.rotation.set( 0, 0, 0 );
+            korutMesh.rotation.set( 0, Math.PI, 0 );
             korutMesh.updateMatrix();
-			korutMesh.position.x = 27
-            korutMesh.scale.set( 3, 3, 3 );
+			korutMesh.position.x = 29;
+			//korutMesh.position.y = 5;
+			
+            korutMesh.scale.set( 4, 4, 3 );
             geometry.computeVertexNormals();
             scene.add(korutMesh );
 			loader2();
@@ -96,7 +100,27 @@ uniform sampler2D texImage;
 			
 			carMesh = new THREE.Mesh( geometry, material );
 			carMesh.scale.set( 0.5,0.5,0.5 );
+			loader3();
+		});
+	}
+	function loader3() {
+    var loader = new THREE.JSONLoader();
+    loader.load( 'Assets/train.json', function ( geometry ) {
+			
+			var material = new THREE.MeshLambertMaterial( {  wireframe: false, side: THREE.DoubleSide } );
+			
+			
+			trainMesh = new THREE.Mesh( geometry, material );
+			trainMesh.scale.set( 0.7,0.7,0.7);
+			trainMesh.position.x = 50;
+			trainMesh.position.y = 1;			
+			trainMesh.position.z = 28;
+				
+			scene.add(trainMesh);
+			
 			init();
+			 
+			
 		});
 	}
 	
@@ -143,12 +167,14 @@ uniform sampler2D texImage;
 
         // Talaj
         waterGeometry = new THREE.PlaneGeometry( 20, 80, 20, 20 );
-        groundGeometry = new THREE.PlaneGeometry( 40, 80, 20, 20 );
+        groundGeometry = new THREE.PlaneGeometry( 70, 80, 20, 20 );
         groundGeometry2 = new THREE.PlaneGeometry( 20, 20, 20, 20 );
         groundGeometry3 = new THREE.PlaneGeometry( 20, 20, 20, 20 );
         groundGeometry4 = new THREE.PlaneGeometry( 20, 20, 20, 20 );
         roadGeometry = new THREE.PlaneGeometry( 5, 80, 20, 20 );
         roadGeometry2 = new THREE.PlaneGeometry( 5, 80, 20, 20 );
+        roadGeometry3 = new THREE.PlaneGeometry( 5, 20, 20, 20 );
+        roadGeometry4 = new THREE.PlaneGeometry( 5, 20, 20, 20 );
 		
 		
         
@@ -157,7 +183,9 @@ uniform sampler2D texImage;
                     wireframe: false,
                     side: THREE.DoubleSide
                 } );
+		//groundMaterial.bumpMap = groundTexture;
 		groundMaterial.map = groundTexture;
+		//groundMaterial.bumpScale = 2.0;
 		var roadMaterial = new THREE.MeshBasicMaterial( {
                     
                     wireframe: false,
@@ -190,8 +218,12 @@ uniform sampler2D texImage;
         var waterMesh = new THREE.Mesh( waterGeometry, material );
         var roadMesh = new THREE.Mesh( roadGeometry, roadMaterial );
         var roadMesh2 = new THREE.Mesh( roadGeometry2, roadMaterial );
+        var roadMesh3 = new THREE.Mesh( roadGeometry3, roadMaterial );
+        var roadMesh4 = new THREE.Mesh( roadGeometry4, roadMaterial );
 		
 		carMesh2 = carMesh.clone();
+		roadMesh5 = roadMesh3.clone();
+		roadMesh6 = roadMesh4.clone();
 		
 		
 		/********************Latte*******************************/
@@ -357,7 +389,7 @@ uniform sampler2D texImage;
 		
         waterMesh.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
         groundMesh.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
-		groundMesh.position.x = 29.9;
+		groundMesh.position.x = 44.9;
 		//groundMesh2.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
 		//groundMesh2.position.z = 19.9;
 		//groundMesh3.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
@@ -368,6 +400,22 @@ uniform sampler2D texImage;
 		roadMesh2.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
 		roadMesh2.position.x = 25;
 		roadMesh2.position.y = 0.1;
+		roadMesh3.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		roadMesh3.position.x = 20;
+		roadMesh3.position.y = 0.1;
+		roadMesh3.position.z = -30;
+		roadMesh5.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		roadMesh5.position.x = 20;
+		roadMesh5.position.y = 0.1;
+		roadMesh5.position.z = 30;
+		roadMesh4.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		roadMesh4.position.x = 36;
+		roadMesh4.position.y = 0.1;
+		roadMesh4.position.z = -30;
+		roadMesh6.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		roadMesh6.position.x = 36;
+		roadMesh6.position.y = 0.1;
+		roadMesh6.position.z = 30;
 		carMesh.position.x= 32;
 		carMesh.position.z = 38;
 		carMesh.position.y = 1;
@@ -387,7 +435,7 @@ uniform sampler2D texImage;
 		dLight.position.set( 0, 0, dLightPositinZ);
 		dLight.target = korutMesh;
 		scene.add( dLight );
-		var ambientLight = new THREE.AmbientLight( 0xFDB813, 1 );
+		var ambientLight = new THREE.AmbientLight( 0x282B2A, 0.5 ); //D6D6D6 - szürke | FDB813 - sárga | 282B2A - asphalt fekete
 		scene.add( ambientLight );
 		scene.fog = new THREE.FogExp2( 0xdfddd6, 0.01 );
 		/**************************fenyek vege*********************************/
@@ -398,6 +446,10 @@ uniform sampler2D texImage;
 		
         scene.add( roadMesh );
         scene.add( roadMesh2 );
+        scene.add( roadMesh3 );
+        scene.add( roadMesh4 );
+        scene.add( roadMesh5 );
+        scene.add( roadMesh6 );
         
         scene.add( waterMesh );
 		
@@ -448,7 +500,7 @@ uniform sampler2D texImage;
         stats.update();
         time = time + 0.25;
 		if (sinusSpeed <= 170)
-			sinusSpeed += 5;
+			sinusSpeed += 3.5;
 		else
 			sinusSpeed = 0;
 		
@@ -464,6 +516,11 @@ uniform sampler2D texImage;
 			carMesh2.position.z = -38;
 	   /*********************Kocsik animalasa********************/
 	   
+	   if(trainMesh.position.z > -35)
+			trainMesh.position.z -= sinusSpeedChanger(sinusSpeed);
+		else
+			trainMesh.position.z = 28
+	   
 	   /*****Nap gyenge probalkozasa**************************/
 	   if(dLightPositinZ < 360){ 
 			dLightPositinZ += 5;
@@ -473,8 +530,8 @@ uniform sampler2D texImage;
 		
 		/**************Holegballon sregan mozgasa**************/
 		
-		holegBallonGroup.position.z -= sinusSpeedChanger(sinusSpeed);
-		holegBallonGroup.position.x -= sinusSpeedChanger(sinusSpeed);
+		holegBallonGroup.position.z -= Math.PI/5;
+		holegBallonGroup.position.x -= Math.PI/5;
 		
 	   
         requestAnimationFrame( render );
