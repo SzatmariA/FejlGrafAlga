@@ -15,6 +15,9 @@
 <script src="js/TrackballControls.js"></script>
 <script src="js/spin.js"></script>
 <script src="js/ThreeBSP.js"></script>
+<script type="text/javascript" src="libs/OBJLoader.js"></script>
+<script type="text/javascript" src="libs/MTLLoader.js"></script>
+<script type="text/javascript" src="libs/OBJMTLLoader.js"></script>
 
 <script id="vertexShader" type="x-shader/x-vertex">
 uniform float time;
@@ -55,12 +58,13 @@ uniform sampler2D texImage;
     var stats;
     var controls;
     var waterGeometry, groundGeometry;
-    var groundGeometry2, groundGeometry3;
+    var railGeometry;
     var groundGeometry4;
     var roadGeometry, roadGeometry2;
     var korutMesh, carMesh, carMesh2;
     var time, dLightPositinZ = 0;
 	var dLight;
+	var dLight2;
 	var meshLoaded;
 	var textureLoader = new THREE.TextureLoader();
 	var spinner;
@@ -68,62 +72,7 @@ uniform sampler2D texImage;
 	var holegBallonGroup;
 	var sinusSpeed = 0;
 	var trainMesh;
-	
-	
-	/*function loader() {
-    var loader = new THREE.JSONLoader();
-    loader.load( 'Assets/TheKorhid.json', function ( geometry ) {
-			
-			var texture = textureLoader.load( 'Assets/roadTexture.jpg' );
-			var material = new THREE.MeshLambertMaterial();
-            material.map = texture;
-            korutMesh = new THREE.Mesh( geometry, material );
-            korutMesh.updateMatrix();
-            geometry.applyMatrix( korutMesh.matrix );
-            korutMesh.rotation.set( 0, Math.PI, 0 );
-            korutMesh.updateMatrix();
-			korutMesh.position.x = 29;
-			//korutMesh.position.y = 5;
-			
-            korutMesh.scale.set( 4, 4, 3 );
-            geometry.computeVertexNormals();
-            scene.add(korutMesh );
-			loader2();
-		});
-	}
-	
-	function loader2() {
-    var loader = new THREE.JSONLoader();
-    loader.load( 'Assets/BumperCar.json', function ( geometry ) {
-			
-			var material = new THREE.MeshPhongMaterial( { color: 0x000000, wireframe: false, side: THREE.DoubleSide } );
-			
-			carMesh = new THREE.Mesh( geometry, material );
-			carMesh.scale.set( 0.5,0.5,0.5 );
-			loader3();
-		});
-	}
-	function loader3() {
-    var loader = new THREE.JSONLoader();
-    loader.load( 'Assets/train.json', function ( geometry ) {
-			
-			var material = new THREE.MeshLambertMaterial( {  wireframe: false, side: THREE.DoubleSide } );
-			
-			
-			trainMesh = new THREE.Mesh( geometry, material );
-			trainMesh.scale.set( 0.7,0.7,0.7);
-			trainMesh.position.x = 50;
-			trainMesh.position.y = 1;			
-			trainMesh.position.z = 28;
-				
-			scene.add(trainMesh);
-			
-			init();
-			 
-			
-		});
-	}*/
-	
+
 
     function init() {
 	
@@ -136,6 +85,8 @@ uniform sampler2D texImage;
         manager.onLoad = function () {
             console.log( 'Manager onLoad called, render started.' );
 			dLight.target = korutMesh;
+			dLight2.target = trainMesh;
+			
           //  appendInfoPanelText( 'Manager onLoad called, rendering started.' );
 			//browser.sleep(5000);
             render();
@@ -167,6 +118,7 @@ uniform sampler2D texImage;
 		/**************************JSON-ok betoltese******************************/
 		
 		var loader = new THREE.JSONLoader(manager);
+		var loaderOBJ = new THREE.OBJMTLLoader(manager);
 		loader.load( 'Assets/TheKorhid.json', function ( geometry ) {
 			
 			var texture = textureLoader.load( 'Assets/roadTexture.jpg' );
@@ -182,14 +134,16 @@ uniform sampler2D texImage;
 			
             korutMesh.scale.set( 4, 4, 3 );
             geometry.computeVertexNormals();
-           // scene.add(korutMesh );
+           scene.add(korutMesh );
 		});
 		
-		loader.load( 'Assets/BumperCar.json', function ( geometry ) {
+		loaderOBJ.load('Assets/Car.obj', 'Assets/Car.mtl', function (object) {
 			
-			var material = new THREE.MeshPhongMaterial( { color: 0x000000, wireframe: false, side: THREE.DoubleSide } );
+			object.scale.set(0.7, 0.7, 0.7);
 			
-			carMesh = new THREE.Mesh( geometry, material );
+            
+			
+			carMesh = object;
 			carMesh.scale.set( 0.5,0.5,0.5 );
 			carMesh.position.x= 32;
 			carMesh.position.z = 38;
@@ -202,26 +156,22 @@ uniform sampler2D texImage;
 			carMesh2.position.y = 1;
 			carMesh2.rotation.y = -1.0 * THREE.Math.degToRad( 90 );
 			
-			//scene.add( carMesh );
-			//scene.add(carMesh2);
+			scene.add( carMesh );
+			scene.add(carMesh2);
 		});
 		
-		loader.load( 'Assets/train.json', function ( geometry ) {
+		
+		loaderOBJ.load('Assets/Train.obj', 'Assets/Train.mtl', function (object) {
+            object.scale.set(0.6, 0.6, 0.6);
 			
-			var material = new THREE.MeshLambertMaterial( {  wireframe: false, side: THREE.DoubleSide } );
-			
-			
-			trainMesh = new THREE.Mesh( geometry, material );
-			trainMesh.scale.set( 0.7,0.7,0.7);
+            trainMesh = object;
 			trainMesh.position.x = 50;
 			trainMesh.position.y = 1;			
 			trainMesh.position.z = 28;
-				
-			//scene.add(trainMesh);
-			
-			 
-			
-		});
+			scene.add(trainMesh);
+            
+
+        });
 		
 		 
 		
@@ -231,8 +181,10 @@ uniform sampler2D texImage;
 		
 		var waterTextureLoader = new THREE.TextureLoader(manager);
 		var waterTexture = waterTextureLoader.load( 'Assets/water.jpg' );
+		
 		var groundTextureLoader = new THREE.TextureLoader(manager);
 		var groundTexture = groundTextureLoader.load( 'Assets/grass.jpg' );
+		var railTexture = groundTextureLoader.load('Assets/rail.jpg');
 		groundTexture.magFilter = THREE.NearestFilter;
 		groundTexture.minFilter = THREE.NearestFilter;
 		
@@ -253,6 +205,7 @@ uniform sampler2D texImage;
         roadGeometry2 = new THREE.PlaneGeometry( 5, 80, 20, 20 );
         roadGeometry3 = new THREE.PlaneGeometry( 5, 20, 20, 20 );
         roadGeometry4 = new THREE.PlaneGeometry( 5, 20, 20, 20 );
+        railGeometry = new THREE.PlaneGeometry( 5, 80, 20, 20 );
 		
 		
         
@@ -263,6 +216,13 @@ uniform sampler2D texImage;
                 } );
 		//groundMaterial.bumpMap = groundTexture;
 		groundMaterial.map = groundTexture;
+		var railMaterial = new THREE.MeshBasicMaterial( {
+                    
+                    wireframe: false,
+                    side: THREE.DoubleSide
+                } );
+		railMaterial.map = railTexture;
+		
 		//groundMaterial.bumpScale = 2.0;
 		var roadMaterial = new THREE.MeshBasicMaterial( {
                     
@@ -298,6 +258,8 @@ uniform sampler2D texImage;
         var roadMesh2 = new THREE.Mesh( roadGeometry2, roadMaterial );
         var roadMesh3 = new THREE.Mesh( roadGeometry3, roadMaterial );
         var roadMesh4 = new THREE.Mesh( roadGeometry4, roadMaterial );
+        var railmesh = new THREE.Mesh( railGeometry, railMaterial );
+		
 		
 		
 		roadMesh5 = roadMesh3.clone();
@@ -494,22 +456,31 @@ uniform sampler2D texImage;
 		roadMesh6.position.x = 36;
 		roadMesh6.position.y = 0.1;
 		roadMesh6.position.z = 30;
+		railmesh.position.x = 50;
+		railmesh.position.y = 0.1;
+		
+		railmesh.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		
 		
 		/************************Meshek vege********************************/
 		
 		
 		/**************************fenyek*********************************/
-		dLight = new THREE.DirectionalLight( 0x00ffff, 1 );
-		dLight.position.set( 0, 0, dLightPositinZ);
+		dLight = new THREE.DirectionalLight( 0xffffff, 1 );
+		dLight.position.set( 1000, 10, 100);
 		
 		scene.add( dLight );
-		var ambientLight = new THREE.AmbientLight( 0x282B2A, 0.5 ); //D6D6D6 - szürke | FDB813 - sárga | 282B2A - asphalt fekete
-		scene.add( ambientLight );
-		scene.fog = new THREE.FogExp2( 0xdfddd6, 0.01 );
+		dLight2 = new THREE.DirectionalLight( 0xffffff, 1 );
+		dLight2.position.set( 0, 0, 180);
+		
+		scene.add( dLight2 );
+		//var ambientLight = new THREE.AmbientLight( 0x282B2A, 0.5 ); //D6D6D6 - szürke | FDB813 - sárga | 282B2A - asphalt fekete
+		//scene.add( ambientLight );
+		//scene.fog = new THREE.FogExp2( 0xdfddd6, 0.01 );
 		/**************************fenyek vege*********************************/
 		
         scene.add( groundMesh );
-       
+		scene.add(railmesh);
 		
         scene.add( roadMesh );
         scene.add( roadMesh2 );
@@ -565,7 +536,7 @@ uniform sampler2D texImage;
 
     var render = function () {
         stats.update();
-        time = time + 0.25;
+        time = time + 0.09;
 		if (sinusSpeed <= 170)
 			sinusSpeed += 3.2;
 		else
@@ -580,14 +551,13 @@ uniform sampler2D texImage;
 	   if(carMesh2.position.z < 35)
 			carMesh2.position.z += Math.PI/5;
 		else 
-			delete carMesh2;
-			//carMesh2.position.z = -38;
+			carMesh2.position.z = -38;
 			
 	   /*********************Vonat animalasa********************/	   
 	   if(trainMesh.position.z > -35)
 			trainMesh.position.z -= sinusSpeedChanger(sinusSpeed);
 		else
-			trainMesh.position.z = 28
+			trainMesh.position.z = 28;
 	   
 	   /*****Nap gyenge probalkozasa**************************/
 	   if(dLightPositinZ < 360){ 
