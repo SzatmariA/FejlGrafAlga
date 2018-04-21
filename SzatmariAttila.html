@@ -71,7 +71,7 @@ uniform sampler2D texImage;
 	var korutMesh;
 	var holegBallonGroup;
 	var sinusSpeed = 0;
-	var trainMesh;
+	var trainMesh, TramTrainTextMesh;
 
 
     function init() {
@@ -112,13 +112,42 @@ uniform sampler2D texImage;
         camera.lookAt( scene.position );
 		
 		holegBallonGroup = new THREE.Object3D();
+		tramtrainGroup = new THREE.Object3D();
 		
-		
+		var dataSzeged = {
+			text : "Szeged",
+			size : 3,
+			height : 2,
+			curveSegments : 12,
+			bevelEnabled : false,
+			bevelThickness : 1,
+			bevelSize : 0.5
+		};
+		var dataVhely = {
+			text : "Hódmezővásárhely",
+			size : 3,
+			height : 2,
+			curveSegments : 12,
+			bevelEnabled : false,
+			bevelThickness : 1,
+			bevelSize : 0.5
+		};
+		var dataTramTrain = {
+			text : "TramTrain",
+			size : 3,
+			height : 2,
+			curveSegments : 12,
+			bevelEnabled : false,
+			bevelThickness : 0.3,
+			bevelSize : 0.5
+		};
 
 		/**************************JSON-ok betoltese******************************/
 		
 		var loader = new THREE.JSONLoader(manager);
 		var loaderOBJ = new THREE.OBJMTLLoader(manager);
+		var loaderFont = new THREE.FontLoader(manager);
+		
 		loader.load( 'Assets/TheKorhid.json', function ( geometry ) {
 			
 			var texture = textureLoader.load( 'Assets/roadTexture.jpg' );
@@ -168,11 +197,59 @@ uniform sampler2D texImage;
 			trainMesh.position.x = 50;
 			trainMesh.position.y = 1;			
 			trainMesh.position.z = 28;
-			scene.add(trainMesh);
+			//scene.add(trainMesh);
+			tramtrainGroup.add(trainMesh);
             
 
         });
 		
+		
+		loaderFont.load( 'Assets/fonts/gentilis_bold.typeface.json', function ( font ) {
+			var szegedGeometry = new THREE.TextGeometry( dataSzeged.text, {
+				font: font,
+				size: dataSzeged.size,
+				height: dataSzeged.height,
+				curveSegments: dataSzeged.curveSegments,
+				bevelEnabled: dataSzeged.bevelEnabled,
+				bevelThickness: dataSzeged.bevelThickness,
+				bevelSize: dataSzeged.bevelSize
+			} );
+			var VhelyGeometry = new THREE.TextGeometry( dataVhely.text, {
+				font: font,
+				size: dataVhely.size,
+				height: dataVhely.height,
+				curveSegments: dataVhely.curveSegments,
+				bevelEnabled: dataVhely.bevelEnabled,
+				bevelThickness: dataVhely.bevelThickness,
+				bevelSize: dataVhely.bevelSize
+			} );
+			var TramTrainGeometry = new THREE.TextGeometry( dataTramTrain.text, {
+				font: font,
+				size: dataTramTrain.size,
+				height: dataTramTrain.height,
+				curveSegments: dataTramTrain.curveSegments,
+				bevelEnabled: dataTramTrain.bevelEnabled,
+				bevelThickness: dataTramTrain.bevelThickness,
+				bevelSize: dataTramTrain.bevelSize
+			} );
+			
+			var textMaterial = new THREE.MeshPhongMaterial( { color: 0xe0e0a0, wireframe: false } );
+			
+			
+			var SzegedTextMesh = new THREE.Mesh( szegedGeometry, textMaterial );
+			var VhelyTextMesh = new THREE.Mesh( VhelyGeometry, textMaterial );
+			TramTrainTextMesh = new THREE.Mesh( TramTrainGeometry, textMaterial );
+			
+			SzegedTextMesh.position.set(20, 20, 40);
+			VhelyTextMesh.position.set(0, 20, -40);
+			TramTrainTextMesh.position.set(50, 20, 28);
+			tramtrainGroup.add(TramTrainTextMesh);
+			
+			scene.add( SzegedTextMesh );
+			scene.add( VhelyTextMesh );
+			scene.add( tramtrainGroup );
+			
+		} );
 		 
 		
 		
@@ -554,10 +631,10 @@ uniform sampler2D texImage;
 			carMesh2.position.z = -38;
 			
 	   /*********************Vonat animalasa********************/	   
-	   if(trainMesh.position.z > -35)
-			trainMesh.position.z -= sinusSpeedChanger(sinusSpeed);
+	   if(tramtrainGroup.position.z > -35)
+			tramtrainGroup.position.z -= sinusSpeedChanger(sinusSpeed);
 		else
-			trainMesh.position.z = 28;
+			tramtrainGroup.position.z = 28;
 	   
 	   /*****Nap gyenge probalkozasa**************************/
 	   if(dLightPositinZ < 360){ 
