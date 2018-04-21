@@ -110,9 +110,12 @@ uniform sampler2D texImage;
         camera = new THREE.PerspectiveCamera( 75, aspectRatio, 0.1, 1000 );
         camera.position.set( 10, 40, 80 );
         camera.lookAt( scene.position );
+		camera.add( listener );
 		
+		var listener = new THREE.AudioListener();
 		holegBallonGroup = new THREE.Object3D();
 		tramtrainGroup = new THREE.Object3D();
+		var sound = new THREE.Audio( listener );
 		
 		var dataSzeged = {
 			text : "Szeged",
@@ -147,6 +150,8 @@ uniform sampler2D texImage;
 		var loader = new THREE.JSONLoader(manager);
 		var loaderOBJ = new THREE.OBJMTLLoader(manager);
 		var loaderFont = new THREE.FontLoader(manager);
+		var audioLoader = new THREE.AudioLoader(manager);
+
 		
 		loader.load( 'Assets/TheKorhid.json', function ( geometry ) {
 			
@@ -250,6 +255,19 @@ uniform sampler2D texImage;
 			scene.add( tramtrainGroup );
 			
 		} );
+		
+		audioLoader.load( 'Assets/sounds/CarPass.mp3', function( buffer ) {
+			sound.setBuffer( buffer );
+			sound.setLoop( true );
+			sound.setVolume( 0.5 );
+			sound.play();
+		});
+		audioLoader.load( 'Assets/sounds/TramSound.mp3', function( buffer ) {
+			sound.setBuffer( buffer );
+			sound.setLoop( true );
+			sound.setVolume( 0.7 );
+			sound.play();
+		});
 		 
 		
 		
@@ -615,7 +633,7 @@ uniform sampler2D texImage;
         stats.update();
         time = time + 0.09;
 		if (sinusSpeed <= 170)
-			sinusSpeed += 3.2;
+			sinusSpeed += 0.5;
 		else
 			sinusSpeed = 0;
 		
