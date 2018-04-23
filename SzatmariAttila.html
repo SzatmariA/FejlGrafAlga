@@ -640,12 +640,13 @@ uniform sampler2D texImage;
 			vehicleMesh.rotation.y -= 0.04;
 			vehicleMesh.rotation.z -= 0.005;
 		}
-		else if(vehicleMesh.position.z >= 0 && vehicleMesh.position.x < 75){
+		else if(vehicleMesh.position.z >= 0 && vehicleMesh.position.x < 78){
 			//Lehajtas a lejaron
 			vehicleMesh.position.x += 0.1;
 			vehicleMesh.position.y -= 0.003;
 		}
-		else if (vehicleMesh.position.x >= 75){
+		else if (vehicleMesh.position.x >= 78){
+			//eredeti allapotba allitas
 			vehicleMesh.position.set(32, 1, 38);
 			vehicleMesh.rotation.set(0,0,0);
 			vehicleMesh.rotation.y = 1.0 * THREE.Math.degToRad( 90 );
