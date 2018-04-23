@@ -610,6 +610,48 @@ uniform sampler2D texImage;
 		return Math.sin(radians);
 	}
 	
+	function truckAnimateGoOnTheRoundabout(vehicleMesh, speed){
+	/*Math.PI/4.5*/
+		
+		if(vehicleMesh.position.z > 25){
+			//Jobbra besorolas
+			vehicleMesh.position.z -= 0.1;
+			vehicleMesh.position.x += 0.03;
+		}
+		else if (vehicleMesh.position.z > 20){
+			//Felhajtas a feljaron part 1
+			vehicleMesh.position.z -= 0.1;
+			vehicleMesh.position.y += 0.05;
+			vehicleMesh.rotation.z += 0.001;
+			
+			
+		}
+		else if(vehicleMesh.position.z > 5){
+			//Felhajtas a feljaron part 2
+			vehicleMesh.position.z -= 0.1;
+			vehicleMesh.position.y += 0.04;
+			vehicleMesh.rotation.z += 0.001;
+		}
+		else if(vehicleMesh.position.z > 1){
+			//Jobbra fordulas az elkerulon
+			vehicleMesh.position.z -= 0.1;
+			vehicleMesh.position.x += 0.1;
+			
+			vehicleMesh.rotation.y -= 0.04;
+			vehicleMesh.rotation.z -= 0.005;
+		}
+		else if(vehicleMesh.position.z >= 0 && vehicleMesh.position.x < 75){
+			//Lehajtas a lejaron
+			vehicleMesh.position.x += 0.1;
+			vehicleMesh.position.y -= 0.003;
+		}
+		else if (vehicleMesh.position.x >= 75){
+			vehicleMesh.position.set(32, 1, 38);
+			vehicleMesh.rotation.set(0,0,0);
+			vehicleMesh.rotation.y = 1.0 * THREE.Math.degToRad( 90 );
+		}
+			//
+	}
 
     var render = function () {
         stats.update();
@@ -621,10 +663,11 @@ uniform sampler2D texImage;
 		
 
 		/**************Kocsik animalasa**********************/
-	   if(carMesh.position.z > -35)
+	   /*if(carMesh.position.z > -35)
 			carMesh.position.z -= Math.PI/4.5;
 		else 
-			carMesh.position.z = 38;
+			carMesh.position.z = 38;*/
+		truckAnimateGoOnTheRoundabout(carMesh);
 	   if(carMesh2.position.z < 35)
 			carMesh2.position.z += Math.PI/5;
 		else 
