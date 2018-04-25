@@ -618,7 +618,7 @@ uniform sampler2D texImage;
 			vehicleMesh.position.z -= 0.1;
 			vehicleMesh.position.x += 0.03;
 		}
-		else if (vehicleMesh.position.z > 13){
+		else if (vehicleMesh.position.z > 15){
 			//Felhajtas a feljaron part 1
 			vehicleMesh.position.z -= 0.1;
 			
@@ -629,17 +629,21 @@ uniform sampler2D texImage;
 			
 			
 		}
+		else if (vehicleMesh.position.z < 16 && vehicleMesh.position.z > 13){
+			vehicleMesh.position.y -= 0.01;
+			vehicleMesh.position.z -= 0.1;
+		}
 		
 		
 		
 		else if(vehicleMesh.position.z > 5){
 			//Felhajtas a feljaron part 2
 			vehicleMesh.position.z -= 0.1;
-			vehicleMesh.position.y -= 0.03;
+			
 			vehicleMesh.position.y += 0.04;
 			
 			vehicleMesh.rotation.z = 0.15;
-			//vehicleMesh.rotation.z += 0.001;
+			vehicleMesh.rotation.z += 0.001;
 		}
 		else if(vehicleMesh.position.z > 1){
 			//Jobbra fordulas az elkerulon
