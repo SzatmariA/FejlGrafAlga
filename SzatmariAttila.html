@@ -61,7 +61,7 @@ uniform sampler2D texImage;
     var railGeometry;
     var groundGeometry4;
     var roadGeometry, roadGeometry2;
-    var korutMesh, carMesh, carMesh2;
+    var korutMesh, carMesh, carMesh2, carMesh3;
     var time, dLightPositinZ = 0;
 	var dLight;
 	var dLight2;
@@ -179,6 +179,12 @@ uniform sampler2D texImage;
 			carMesh.position.y = 1;
 			carMesh.rotation.y = 1.0 * THREE.Math.degToRad( 90 );
 			
+			carMesh3 = carMesh.clone();		
+			carMesh3.position.x= 30;
+			carMesh3.position.z = 38;
+			carMesh3.position.y = 1;
+			carMesh3.rotation.y = 1.0 * THREE.Math.degToRad( 90 );
+			
 			carMesh2 = carMesh.clone();		
 			carMesh2.position.x = 24.5;
 			carMesh2.position.z = -38;
@@ -187,6 +193,7 @@ uniform sampler2D texImage;
 			
 			scene.add( carMesh );
 			scene.add(carMesh2);
+			scene.add(carMesh3);
 		});
 		
 		
@@ -640,7 +647,7 @@ uniform sampler2D texImage;
 			//Felhajtas a feljaron part 2
 			vehicleMesh.position.z -= 0.1;
 			
-			vehicleMesh.position.y += 0.04;
+			vehicleMesh.position.y += 0.045;
 			
 			vehicleMesh.rotation.z = 0.15;
 			vehicleMesh.rotation.z += 0.001;
@@ -677,10 +684,10 @@ uniform sampler2D texImage;
 		
 
 		/**************Kocsik animalasa**********************/
-	   /*if(carMesh.position.z > -35)
-			carMesh.position.z -= Math.PI/4.5;
+	   if(carMesh3.position.z > -35)
+			carMesh3.position.z -= Math.PI/4.5;
 		else 
-			carMesh.position.z = 38;*/
+			carMesh3.position.z = 38;
 		truckAnimateGoOnTheRoundabout(carMesh);
 	   if(carMesh2.position.z < 35)
 			carMesh2.position.z += Math.PI/5;
