@@ -72,6 +72,8 @@ uniform sampler2D texImage;
 	var holegBallonGroup;
 	var sinusSpeed = 0;
 	var trainMesh, TramTrainTextMesh;
+	var SzegedTextMesh;
+	var VhelyTextMesh;
 
 
     function init() {
@@ -243,17 +245,22 @@ uniform sampler2D texImage;
 			var textMaterial = new THREE.MeshPhongMaterial( { color: 0xe0e0a0, wireframe: false } );
 			
 			
-			var SzegedTextMesh = new THREE.Mesh( szegedGeometry, textMaterial );
-			var VhelyTextMesh = new THREE.Mesh( VhelyGeometry, textMaterial );
+			SzegedTextMesh = new THREE.Mesh( szegedGeometry, textMaterial );
+			VhelyTextMesh = new THREE.Mesh( VhelyGeometry, textMaterial );
 			TramTrainTextMesh = new THREE.Mesh( TramTrainGeometry, textMaterial );
 			
 			SzegedTextMesh.position.set(20, 20, 40);
 			VhelyTextMesh.position.set(0, 20, -40);
 			TramTrainTextMesh.position.set(50, 20, 28);
+			TramTrainTextMesh.name = 'tramtraintext';
 			tramtrainGroup.add(TramTrainTextMesh);
 			
+			
+			SzegedTextMesh.name = 'szegedtext';
 			scene.add( SzegedTextMesh );
+			VhelyTextMesh.name = 'vhelytext';
 			scene.add( VhelyTextMesh );
+			
 			scene.add( tramtrainGroup );
 			
 		} );
@@ -578,6 +585,7 @@ uniform sampler2D texImage;
 
         // Az ablak későbbi átméretezése esetén visszahívható függvény megadása
         window.addEventListener( 'resize', handleWindowResize, false );
+		window.addEventListener( 'keydown', handleKeyDown);
 
         // Kamera vezérlés
         controls = new THREE.TrackballControls( camera, renderer.domElement );
@@ -599,6 +607,24 @@ uniform sampler2D texImage;
         camera.aspect = aspectRatio;
         camera.updateProjectionMatrix();
     }
+	
+	function handleKeyDown( event ) {
+		if(event.keyCode == 80){
+			if(scene.getObjectByName('vhelytext'))
+				scene.remove(VhelyTextMesh);				
+			else
+				scene.add( VhelyTextMesh );
+			if(scene.getObjectByName('szegedtext'))
+				scene.remove(SzegedTextMesh);				
+			else
+				scene.add( SzegedTextMesh );
+			if(tramtrainGroup.getObjectByName('tramtraintext'))
+				tramtrainGroup.remove(TramTrainTextMesh);
+			else
+				tramtrainGroup.add(TramTrainTextMesh);
+           
+        }
+	}
 
     function addStatsObject() {
         stats = new Stats();
@@ -697,8 +723,10 @@ uniform sampler2D texImage;
 	   /*********************Vonat animalasa********************/	   
 	   if(tramtrainGroup.position.z > -35)
 			tramtrainGroup.position.z -= sinusSpeedChanger(sinusSpeed);
-		else
+		else{
 			tramtrainGroup.position.z = 28;
+			
+		}
 	   
 	   /*****Nap gyenge probalkozasa**************************/
 	   if(dLightPositinZ < 360){ 
