@@ -618,25 +618,34 @@ uniform sampler2D texImage;
 			vehicleMesh.position.z -= 0.1;
 			vehicleMesh.position.x += 0.03;
 		}
-		else if (vehicleMesh.position.z > 20){
+		else if (vehicleMesh.position.z > 13){
 			//Felhajtas a feljaron part 1
 			vehicleMesh.position.z -= 0.1;
+			
 			vehicleMesh.position.y += 0.05;
+			vehicleMesh.rotation.z = 0.3;
 			vehicleMesh.rotation.z += 0.001;
+			
 			
 			
 		}
+		
+		
+		
 		else if(vehicleMesh.position.z > 5){
 			//Felhajtas a feljaron part 2
 			vehicleMesh.position.z -= 0.1;
+			vehicleMesh.position.y -= 0.03;
 			vehicleMesh.position.y += 0.04;
-			vehicleMesh.rotation.z += 0.001;
+			
+			vehicleMesh.rotation.z = 0.15;
+			//vehicleMesh.rotation.z += 0.001;
 		}
 		else if(vehicleMesh.position.z > 1){
 			//Jobbra fordulas az elkerulon
 			vehicleMesh.position.z -= 0.1;
 			vehicleMesh.position.x += 0.1;
-			
+			vehicleMesh.rotation.z = 0;
 			vehicleMesh.rotation.y -= 0.04;
 			vehicleMesh.rotation.z -= 0.005;
 		}
