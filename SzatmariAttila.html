@@ -74,6 +74,7 @@ uniform sampler2D texImage;
 	var trainMesh, TramTrainTextMesh;
 	var SzegedTextMesh;
 	var VhelyTextMesh;
+	var LorryMesh;
 
 
     function init() {
@@ -196,6 +197,25 @@ uniform sampler2D texImage;
 			scene.add( carMesh );
 			scene.add(carMesh2);
 			scene.add(carMesh3);
+		});
+		
+		loaderOBJ.load('Assets/Lorry.obj', 'Assets/Lorry.mtl', function (object) {
+			
+			object.scale.set(1, 1, 1);
+			
+            
+			
+			LorryMesh = object;
+			//LorryMesh.scale.set( 0.5,0.5,0.5 );
+			LorryMesh.position.x= 32;
+			LorryMesh.position.z = 38;
+			LorryMesh.position.y = 0.5;
+			LorryMesh.rotation.y = 1.0 * THREE.Math.degToRad( 90 );
+			
+			
+			
+			scene.add( LorryMesh );
+			
 		});
 		
 		
