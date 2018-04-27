@@ -79,6 +79,7 @@ uniform sampler2D texImage;
 
     function init() {
 	
+		
 		var manager = new THREE.LoadingManager();
         manager.onProgress = function ( item, loaded, total ) {
             console.log( 'Manager onProgress: loading of', item, 'finished; ', loaded, ' of ', total, ' objects loaded.' );
@@ -613,6 +614,7 @@ uniform sampler2D texImage;
         controls.panSpeed = 1.0;
 
         addStatsObject();
+		alert('P lenyomasaval lehet ki/be-kapcsolni a szovegeket.');
         // Első képkocka rajzolása
         //render();
     }
