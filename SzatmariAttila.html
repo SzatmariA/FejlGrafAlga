@@ -208,10 +208,10 @@ uniform sampler2D texImage;
 			
 			LorryMesh = object;
 			//LorryMesh.scale.set( 0.5,0.5,0.5 );
-			LorryMesh.position.x= 32;
-			LorryMesh.position.z = 38;
+			LorryMesh.position.x= 22.5;
+			LorryMesh.position.z = -38;
 			LorryMesh.position.y = 0.5;
-			LorryMesh.rotation.y = 1.0 * THREE.Math.degToRad( 90 );
+			LorryMesh.rotation.y = -1.0 * THREE.Math.degToRad( 90 );
 			
 			
 			
@@ -665,60 +665,147 @@ uniform sampler2D texImage;
 		return Math.sin(radians);
 	}
 	
-	function truckAnimateGoOnTheRoundabout(vehicleMesh, speed){
+	function carAnimateGoOnTheRoundabout(vehicleMesh){
+	/*Math.PI/4.5*/
+	
+		if(((vehicleMesh.z >= LorryMesh.z + 2) && (vehicleMesh.z <= LorryMesh.z + 20)) || ((vehicleMesh.x <= LorryMesh.x - 5)  && (vehicleMesh.x >= LorryMesh.x - 10))){
+		
+			
+				vehicleMesh.x = LorryMesh.x - 4;
+				//vehicleMesh.z = LorryMesh.z + 4;
+			
+		}
+		else{
+			
+		
+				if(vehicleMesh.position.z > 25){
+					//Jobbra besorolas
+					vehicleMesh.position.z -= 0.1;
+					vehicleMesh.position.x += 0.03;
+				}
+				else if (vehicleMesh.position.z > 15){
+					//Felhajtas a feljaron part 1
+					vehicleMesh.position.z -= 0.1;
+					
+					vehicleMesh.position.y += 0.05;
+					vehicleMesh.rotation.z = 0.3;
+					vehicleMesh.rotation.z += 0.001;
+					
+					
+					
+				}
+				else if (vehicleMesh.position.z < 16 && vehicleMesh.position.z > 13){
+					vehicleMesh.position.y -= 0.01;
+					vehicleMesh.position.z -= 0.1;
+				}
+				
+				
+				
+				else if(vehicleMesh.position.z > 5){
+					//Felhajtas a feljaron part 2
+					vehicleMesh.position.z -= 0.1;
+					
+					vehicleMesh.position.y += 0.045;
+					
+					vehicleMesh.rotation.z = 0.15;
+					vehicleMesh.rotation.z += 0.001;
+				}
+				else if(vehicleMesh.position.z > 1){
+					//Jobbra fordulas az elkerulon
+					vehicleMesh.position.z -= 0.1;
+					vehicleMesh.position.x += 0.1;
+					vehicleMesh.rotation.z = 0;
+					vehicleMesh.rotation.y -= 0.04;
+					vehicleMesh.rotation.z -= 0.005;
+				}
+				else if(vehicleMesh.position.z >= 0 && vehicleMesh.position.x < 78){
+					//Lehajtas a lejaron
+					vehicleMesh.position.x += 0.1;
+					vehicleMesh.position.y -= 0.003;
+				}
+				else if (vehicleMesh.position.x >= 78){
+					//eredeti allapotba allitas
+					vehicleMesh.position.set(32, 1, 38);
+					vehicleMesh.rotation.set(0,0,0);
+					vehicleMesh.rotation.y = 1.0 * THREE.Math.degToRad( 90 );
+				}
+			}
+		
+			//
+	}
+	
+	function lorryAnimateGoOnTheRoundabout(vehicleMesh){
 	/*Math.PI/4.5*/
 		
-		if(vehicleMesh.position.z > 25){
+		if(vehicleMesh.position.z < -25){
 			//Jobbra besorolas
-			vehicleMesh.position.z -= 0.1;
-			vehicleMesh.position.x += 0.03;
+			vehicleMesh.position.z += 0.1;
+			vehicleMesh.position.x -= 0.03;
 		}
-		else if (vehicleMesh.position.z > 15){
+		else if (vehicleMesh.position.z < -15){
 			//Felhajtas a feljaron part 1
-			vehicleMesh.position.z -= 0.1;
+			vehicleMesh.position.z += 0.1;
 			
 			vehicleMesh.position.y += 0.05;
-			vehicleMesh.rotation.z = 0.3;
-			vehicleMesh.rotation.z += 0.001;
+			vehicleMesh.rotation.z = 0.4;
+			vehicleMesh.rotation.z -= 0.001;
 			
 			
 			
 		}
-		else if (vehicleMesh.position.z < 16 && vehicleMesh.position.z > 13){
+		else if (vehicleMesh.position.z > -16 && vehicleMesh.position.z < -13){
 			vehicleMesh.position.y -= 0.01;
-			vehicleMesh.position.z -= 0.1;
+			vehicleMesh.position.z += 0.1;
 		}
 		
 		
 		
-		else if(vehicleMesh.position.z > 5){
+		else if(vehicleMesh.position.z < -5){
 			//Felhajtas a feljaron part 2
-			vehicleMesh.position.z -= 0.1;
+			vehicleMesh.position.z += 0.1;
 			
-			vehicleMesh.position.y += 0.045;
+			vehicleMesh.position.y += 0.035;
 			
-			vehicleMesh.rotation.z = 0.15;
+			vehicleMesh.rotation.z = 0.25;
 			vehicleMesh.rotation.z += 0.001;
 		}
-		else if(vehicleMesh.position.z > 1){
-			//Jobbra fordulas az elkerulon
-			vehicleMesh.position.z -= 0.1;
-			vehicleMesh.position.x += 0.1;
+		else if(vehicleMesh.position.z < 4&& vehicleMesh.position.x < 32){
+			//Balra fordulas az elkerulon
+			vehicleMesh.position.z += 0.06;
+			vehicleMesh.position.x += 0.03;
 			vehicleMesh.rotation.z = 0;
-			vehicleMesh.rotation.y -= 0.04;
-			vehicleMesh.rotation.z -= 0.005;
+			vehicleMesh.rotation.y += 0.004;
+			vehicleMesh.rotation.z += 0.005;
 		}
-		else if(vehicleMesh.position.z >= 0 && vehicleMesh.position.x < 78){
+		else if (vehicleMesh.position.z < 5 && vehicleMesh.position.x < 35) {
+			//vehicleMesh.position.z += 0.06;
+			vehicleMesh.position.x += 0.03;
+			vehicleMesh.rotation.z = 0;
+			//vehicleMesh.position.z -= 0.005;
+			vehicleMesh.rotation.y += 0.004;
+			//vehicleMesh.rotation.z += 0.005;
+		}
+		else if (vehicleMesh.position.x < 43) {
+			//vehicleMesh.position.z += 0.06;
+			vehicleMesh.position.x += 0.03;
+			vehicleMesh.rotation.z = 0;
+			
+			vehicleMesh.rotation.y -= 0.0015;
+			vehicleMesh.position.z -= 0.015;
+		}
+		
+		else if(vehicleMesh.position.z >= -2 && vehicleMesh.position.x < 78){
 			//Lehajtas a lejaron
 			vehicleMesh.position.x += 0.1;
 			vehicleMesh.position.y -= 0.003;
+			vehicleMesh.rotation.y -= 0.001;
 		}
-		else if (vehicleMesh.position.x >= 78){
+		/*else if (vehicleMesh.position.x >= 78){
 			//eredeti allapotba allitas
 			vehicleMesh.position.set(32, 1, 38);
 			vehicleMesh.rotation.set(0,0,0);
 			vehicleMesh.rotation.y = 1.0 * THREE.Math.degToRad( 90 );
-		}
+		}*/
 			//
 	}
 
@@ -736,7 +823,8 @@ uniform sampler2D texImage;
 			carMesh3.position.z -= Math.PI/4.5;
 		else 
 			carMesh3.position.z = 38;
-		truckAnimateGoOnTheRoundabout(carMesh);
+	   carAnimateGoOnTheRoundabout(carMesh);
+	   lorryAnimateGoOnTheRoundabout(LorryMesh);
 	   if(carMesh2.position.z < 35)
 			carMesh2.position.z += Math.PI/5;
 		else 
