@@ -31,8 +31,7 @@ varying vec2  vUv;
 		vNormal = normal;
 		vUv = uv;
 	    newPosition.z = magnitude * (sin(freq * position.x + time) + cos(freq*position.y + time));
-		gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
-
+		gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0); 
 	}
 </script>
 
@@ -104,7 +103,8 @@ uniform sampler2D texImage;
         // Renderer létrehozása és DOM-hoz adása
         renderer = new THREE.WebGLRenderer( { antialias: true } );
         renderer.setSize( WIDTH, HEIGHT );
-        renderer.setClearColor( 0xC0C0C0 );
+        //renderer.setClearColor( 0xC0C0C0 );
+        renderer.setClearColor( 0x000000 );
         document.body.appendChild( renderer.domElement );
 
         // Színtér létrehozása
@@ -308,8 +308,8 @@ uniform sampler2D texImage;
 		
 
         // Talaj
-        waterGeometry = new THREE.PlaneGeometry( 20, 80, 20, 20 );
-        groundGeometry = new THREE.PlaneGeometry( 70, 80, 20, 20 );
+        waterGeometry = new THREE.BoxGeometry( 20, 80, 20 );
+        groundGeometry = new THREE.BoxGeometry( 70, 80, 20 );
         groundGeometry2 = new THREE.PlaneGeometry( 20, 20, 20, 20 );
         groundGeometry3 = new THREE.PlaneGeometry( 20, 20, 20, 20 );
         groundGeometry4 = new THREE.PlaneGeometry( 20, 20, 20, 20 );
@@ -540,8 +540,11 @@ uniform sampler2D texImage;
 		scene.add(holegBallonGroup);
 		
         waterMesh.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		//waterMesh.position.y = -10;
         groundMesh.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
 		groundMesh.position.x = 44.9;
+		groundMesh.position.y = -10;
+		
 		//groundMesh2.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
 		//groundMesh2.position.z = 19.9;
 		//groundMesh3.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
@@ -615,6 +618,8 @@ uniform sampler2D texImage;
 
         addStatsObject();
 		alert('P lenyomasaval lehet ki/be-kapcsolni a szovegeket.');
+		
+		createParticles();
         // Első képkocka rajzolása
         //render();
     }
@@ -733,6 +738,48 @@ uniform sampler2D texImage;
 		
 			//
 	}
+	
+	 function createParticles() {
+
+
+            var geom = new THREE.Geometry();
+            // map: apply a texture to the particles
+            // size: size of the particle
+            // sizeAnnutation: true, the size is based on the
+            // distance from the camera
+            // vertexColors: colors array in the geometry has been filled
+            // opacity: opacity of the particle
+            // transparent: particle will be rendered with the opacity
+            // blending: blend mode to use when rendering the particle
+            // (Animations and Moving the Camera)
+            // fog: particles are affected by fog
+            var material = new THREE.PointCloudMaterial({
+                size: 1,
+                transparent: false,
+                opacity: 0,
+                vertexColors: false,
+
+                sizeAttenuation: false,
+                color: 0xfaf27a
+            });
+
+
+            var range = 500;
+            for (var i = 0; i < 15000; i++) {
+                var particle = new THREE.Vector3(Math.random() * range - range / 2, Math.random() * range - range / 2, Math.random() * range - range / 2);
+                geom.vertices.push(particle);
+                var color = new THREE.Color(0xfaf27a);
+                color.setHSL(color.getHSL().h, color.getHSL().s, Math.random() * color.getHSL().l);
+                geom.colors.push(color);
+
+            }
+
+            cloud = new THREE.PointCloud(geom, material);
+            cloud.name = "particles";
+            scene.add(cloud);
+        }
+	
+	
 	
 	function lorryAnimateGoOnTheRoundabout(vehicleMesh){
 	/*Math.PI/4.5*/
