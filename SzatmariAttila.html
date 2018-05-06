@@ -176,6 +176,8 @@ uniform sampler2D texImage;
             korutMesh.rotation.set( 0, Math.PI, 0 );
             korutMesh.updateMatrix();
 			korutMesh.position.x = 29;
+			korutMesh.castShadow = true;
+			korutMesh.receiveShadow = true;
 			//korutMesh.position.y = 5;
 			
             korutMesh.scale.set( 4, 4, 3 );
@@ -194,18 +196,24 @@ uniform sampler2D texImage;
 			carMesh.position.x= 32;
 			carMesh.position.z = 38;
 			carMesh.position.y = 1;
+			carMesh.castShadow = true;
+			carMesh.receiveShadow = true;
 			carMesh.rotation.y = 1.0 * THREE.Math.degToRad( 90 );
 			
 			carMesh3 = carMesh.clone();		
 			carMesh3.position.x= 30;
 			carMesh3.position.z = 38;
 			carMesh3.position.y = 1;
+			carMesh3.castShadow = true;
+			carMesh3.receiveShadow = true;
 			carMesh3.rotation.y = 1.0 * THREE.Math.degToRad( 90 );
 			
 			carMesh2 = carMesh.clone();		
 			carMesh2.position.x = 24.5;
 			carMesh2.position.z = -38;
 			carMesh2.position.y = 1;
+			carMesh2.castShadow = true;
+			carMesh2.receiveShadow = true;
 			carMesh2.rotation.y = -1.0 * THREE.Math.degToRad( 90 );
 			
 			scene.add( carMesh );
@@ -224,6 +232,8 @@ uniform sampler2D texImage;
 			LorryMesh.position.x= 22.5;
 			LorryMesh.position.z = -38;
 			LorryMesh.position.y = 0.5;
+			LorryMesh.castShadow = true;
+			LorryMesh.receiveShadow = true;
 			LorryMesh.rotation.y = -1.0 * THREE.Math.degToRad( 90 );
 			
 			
@@ -240,6 +250,8 @@ uniform sampler2D texImage;
 			trainMesh.position.x = 50;
 			trainMesh.position.y = 1;			
 			trainMesh.position.z = 28;
+			trainMesh.castShadow = true;
+			trainMesh.receiveShadow = true;
 			//scene.add(trainMesh);
 			tramtrainGroup.add(trainMesh);
             
@@ -436,6 +448,8 @@ uniform sampler2D texImage;
 			latheMesh.position.y = 30;
 			var balloonTexture = textureLoader.load( 'Assets/balloon.jpg' ); //Ez nem akart mukodni
 			latheMesh.map = balloonTexture;
+			latheMesh.castShadow = true;
+			latheMesh.receiveShadow = true;
             scene.add(latheMesh);
 			}
 			
@@ -562,6 +576,7 @@ uniform sampler2D texImage;
         groundMesh.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
 		groundMesh.position.x = 44.9;
 		groundMesh.receiveShadow = true;
+		groundMesh.castShadow = true;
 		
 		
 		//groundMesh2.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
