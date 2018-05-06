@@ -18,6 +18,13 @@
 <script type="text/javascript" src="libs/OBJLoader.js"></script>
 <script type="text/javascript" src="libs/MTLLoader.js"></script>
 <script type="text/javascript" src="libs/OBJMTLLoader.js"></script>
+<script type="text/javascript" src="libs/postprocessing/ShaderPass.js"></script>
+<script type="text/javascript" src="libs/shaders/CopyShader.js"></script>
+<script type="text/javascript" src="libs/postprocessing/EffectComposer.js"></script>
+<script type="text/javascript" src="libs/postprocessing/MaskPass.js"></script>
+<script type="text/javascript" src="libs/postprocessing/RenderPass.js"></script>
+<script type="text/javascript" src="libs/postprocessing/GlitchPass.js"></script>
+<script type="text/javascript" src="libs/postprocessing/DigitalGlitch.js"></script>
 
 <script id="vertexShader" type="x-shader/x-vertex">
 uniform float time;
@@ -74,6 +81,10 @@ uniform sampler2D texImage;
 	var SzegedTextMesh;
 	var VhelyTextMesh;
 	var LorryMesh;
+	var composer;
+	var glitch = false;
+	var effectGlitch;
+	var cloud;
 
 
     function init() {
@@ -103,15 +114,16 @@ uniform sampler2D texImage;
         // Renderer létrehozása és DOM-hoz adása
         renderer = new THREE.WebGLRenderer( { antialias: true } );
         renderer.setSize( WIDTH, HEIGHT );
-        //renderer.setClearColor( 0xC0C0C0 );
-        renderer.setClearColor( 0x000000 );
+        renderer.setClearColor( 0xcce0ff  );
+        
         document.body.appendChild( renderer.domElement );
 
         // Színtér létrehozása
         //scene = new THREE.Scene();
+		scene.fog = new THREE.Fog( 0xcce0ff, 500, 10000 );
 
         // Kamera létrehozása és vetítési paramétereinek beállítása
-        camera = new THREE.PerspectiveCamera( 75, aspectRatio, 0.1, 1000 );
+        camera = new THREE.PerspectiveCamera( 75, aspectRatio, 1, 1000 );
         camera.position.set( 10, 40, 80 );
         camera.lookAt( scene.position );
 		
@@ -299,6 +311,9 @@ uniform sampler2D texImage;
 		var railTexture = groundTextureLoader.load('Assets/rail.jpg');
 		groundTexture.magFilter = THREE.NearestFilter;
 		groundTexture.minFilter = THREE.NearestFilter;
+		groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
+		groundTexture.repeat.set( 100, 100 );
+		groundTexture.anisotropy = 16;
 		
 		roadTexture.magFilter = THREE.NearestFilter;
 		roadTexture.minFilter = THREE.NearestFilter;
@@ -306,10 +321,11 @@ uniform sampler2D texImage;
 		waterTexture.minFilter = THREE.NearestFilter;
 		
 		
+		
 
         // Talaj
         waterGeometry = new THREE.PlaneGeometry( 20, 80, 20 ,20 );
-        groundGeometry = new THREE.BoxGeometry( 70, 80, 20 );
+        groundGeometry = new THREE.PlaneGeometry( 70, 80, 20, 20 );
         groundGeometry2 = new THREE.PlaneGeometry( 20, 20, 20, 20 );
         groundGeometry3 = new THREE.PlaneGeometry( 20, 20, 20, 20 );
         groundGeometry4 = new THREE.PlaneGeometry( 20, 20, 20, 20 );
@@ -543,7 +559,8 @@ uniform sampler2D texImage;
 		//waterMesh.position.y = -10;
         groundMesh.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
 		groundMesh.position.x = 44.9;
-		groundMesh.position.y = -10;
+		groundMesh.receiveShadow = true;
+		
 		
 		//groundMesh2.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
 		//groundMesh2.position.z = 19.9;
@@ -583,6 +600,11 @@ uniform sampler2D texImage;
 		/**************************fenyek*********************************/
 		dLight = new THREE.DirectionalLight( 0xffffff, 1 );
 		dLight.position.set( 1000, 10, 100);
+		dLight.shadow.camera.left = - 5;
+				dLight.shadow.camera.right = 5;
+				dLight.shadow.camera.top = 5;
+				dLight.shadow.camera.bottom = - 5;
+				dLight.shadow.camera.far = 10;
 		
 		scene.add( dLight );
 		dLight2 = new THREE.DirectionalLight( 0xffffff, 1 );
@@ -615,11 +637,26 @@ uniform sampler2D texImage;
         controls = new THREE.TrackballControls( camera, renderer.domElement );
         controls.rotateSpeed = 5.0;
         controls.panSpeed = 1.0;
+		controls.maxPolarAngle = Math.PI * 0.5;
+		controls.minDistance = 70;
+		controls.maxDistance = 200;
 
         addStatsObject();
 		alert('P lenyomasaval lehet ki/be-kapcsolni a szovegeket.');
 		
-		createParticles();
+		//createParticles();
+		
+		var renderPass = new THREE.RenderPass(scene, camera);
+
+        // create glitch effect
+        effectGlitch= new THREE.GlitchPass(120);
+        effectGlitch.renderToScreen = true;
+		effectGlitch.goWild = false;
+
+        composer = new THREE.EffectComposer(renderer);
+        composer.addPass(renderPass);
+        composer.addPass(effectGlitch);
+
         // Első képkocka rajzolása
         //render();
     }
@@ -651,6 +688,22 @@ uniform sampler2D texImage;
 				tramtrainGroup.add(TramTrainTextMesh);
            
         }
+		if(event.keyCode == 83) { //s mint space lenyomasa
+			if(glitch){
+				if(scene.getObjectByName('particles'))
+					scene.remove(cloud);
+				renderer.setClearColor( 0xcce0ff );
+				glitch = false;
+			}
+			else {
+				if(!scene.getObjectByName('particles'))
+					createParticles();
+				
+				renderer.setClearColor( 0x000000 );
+				
+				glitch = true;
+			}
+		}
 	}
 
     function addStatsObject() {
@@ -908,12 +961,14 @@ uniform sampler2D texImage;
 
         // Kamera vezérlés
         controls.update();
-
-
-
+		effectGlitch.goWild = false;
+		
         // 3D -> 2D vetített kép kiszámítása.
         // scene 3D színtér képe a camera kamera szemszögéből.
-        renderer.render( scene, camera );
+		if(glitch)
+			composer.render();
+		else
+			renderer.render(scene,camera);
     };
 
 </script>
