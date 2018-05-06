@@ -13,6 +13,7 @@
 <script src="js/three.min.js"></script>
 <script src="js/stats.min.js"></script>
 <script src="js/TrackballControls.js"></script>
+<script src="js/OrbitControls.js"></script>
 <script src="js/spin.js"></script>
 <script src="js/ThreeBSP.js"></script>
 <script type="text/javascript" src="libs/OBJLoader.js"></script>
@@ -324,16 +325,16 @@ uniform sampler2D texImage;
 		
 
         // Talaj
-        waterGeometry = new THREE.PlaneGeometry( 20, 80, 20 ,20 );
-        groundGeometry = new THREE.PlaneGeometry( 70, 80, 20, 20 );
+        waterGeometry = new THREE.PlaneGeometry( 300, 300, 500 ,500 );
+        groundGeometry = new THREE.PlaneGeometry( 20000, 20000, 20, 20 );
         groundGeometry2 = new THREE.PlaneGeometry( 20, 20, 20, 20 );
         groundGeometry3 = new THREE.PlaneGeometry( 20, 20, 20, 20 );
         groundGeometry4 = new THREE.PlaneGeometry( 20, 20, 20, 20 );
-        roadGeometry = new THREE.PlaneGeometry( 5, 80, 20, 20 );
-        roadGeometry2 = new THREE.PlaneGeometry( 5, 80, 20, 20 );
-        roadGeometry3 = new THREE.PlaneGeometry( 5, 20, 20, 20 );
-        roadGeometry4 = new THREE.PlaneGeometry( 5, 20, 20, 20 );
-        railGeometry = new THREE.PlaneGeometry( 5, 80, 20, 20 );
+        roadGeometry = new THREE.PlaneGeometry( 5, 20000, 20, 20 );
+        roadGeometry2 = new THREE.PlaneGeometry( 5, 20000, 20, 20 );
+        roadGeometry3 = new THREE.PlaneGeometry( 5, 20000, 20, 20 );
+        roadGeometry4 = new THREE.PlaneGeometry( 5, 20000, 20, 20 );
+        railGeometry = new THREE.PlaneGeometry( 5, 20000, 20, 20 );
 		
 		
         
@@ -556,7 +557,8 @@ uniform sampler2D texImage;
 		scene.add(holegBallonGroup);
 		
         waterMesh.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
-		//waterMesh.position.y = -10;
+		waterMesh.position.y = 0.45;
+		waterMesh.position.x = -150;
         groundMesh.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
 		groundMesh.position.x = 44.9;
 		groundMesh.receiveShadow = true;
@@ -598,8 +600,12 @@ uniform sampler2D texImage;
 		
 		
 		/**************************fenyek*********************************/
-		dLight = new THREE.DirectionalLight( 0xffffff, 1 );
-		dLight.position.set( 1000, 10, 100);
+		scene.add( new THREE.AmbientLight( 0x666666 ) );
+		dLight = new THREE.DirectionalLight( 0xdfebff, 1 );
+		dLight.position.set(  50, 200, 100 );
+		dLight.castShadow = true;
+		dLight.shadow.mapSize.width = 1024;
+		dLight.shadow.mapSize.height = 1024;
 		dLight.shadow.camera.left = - 5;
 				dLight.shadow.camera.right = 5;
 				dLight.shadow.camera.top = 5;
@@ -634,12 +640,12 @@ uniform sampler2D texImage;
 		window.addEventListener( 'keydown', handleKeyDown);
 
         // Kamera vezérlés
-        controls = new THREE.TrackballControls( camera, renderer.domElement );
-        controls.rotateSpeed = 5.0;
-        controls.panSpeed = 1.0;
+        controls =  new THREE.OrbitControls( camera, renderer.domElement );
+        //controls.rotateSpeed = 5.0;
+        //controls.panSpeed = 1.0;
 		controls.maxPolarAngle = Math.PI * 0.5;
 		controls.minDistance = 70;
-		controls.maxDistance = 200;
+		controls.maxDistance = 150;
 
         addStatsObject();
 		alert('P lenyomasaval lehet ki/be-kapcsolni a szovegeket.');
