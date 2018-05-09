@@ -86,7 +86,8 @@ uniform sampler2D texImage;
 	var glitch = false;
 	var effectGlitch;
 	var cloud;
-
+	var groundMesh, waterMesh, groundMesh2, groundMesh3, groundSpaceMesh, roadMesh, roadMesh2, roadMesh3, roadMesh4;
+	var railmesh, railSpaceMesh, waterSpaceMesh, roadSpaceMesh, roadSpaceMesh2, roadSpaceMesh3, roadSpaceMesh4;
 
     function init() {
 	
@@ -338,15 +339,24 @@ uniform sampler2D texImage;
 
         // Talaj
         waterGeometry = new THREE.PlaneGeometry( 300, 300, 500 ,500 );
+        
         groundGeometry = new THREE.PlaneGeometry( 20000, 20000, 20, 20 );
-        groundGeometry2 = new THREE.PlaneGeometry( 20, 20, 20, 20 );
-        groundGeometry3 = new THREE.PlaneGeometry( 20, 20, 20, 20 );
-        groundGeometry4 = new THREE.PlaneGeometry( 20, 20, 20, 20 );
+        
+        
         roadGeometry = new THREE.PlaneGeometry( 5, 20000, 20, 20 );
         roadGeometry2 = new THREE.PlaneGeometry( 5, 20000, 20, 20 );
         roadGeometry3 = new THREE.PlaneGeometry( 5, 20000, 20, 20 );
         roadGeometry4 = new THREE.PlaneGeometry( 5, 20000, 20, 20 );
         railGeometry = new THREE.PlaneGeometry( 5, 20000, 20, 20 );
+		
+		//Space
+		groundSpaceGeometry = new THREE.PlaneGeometry( 70, 80, 20, 20 );		
+		waterSpaceGeometry = new THREE.PlaneGeometry( 20, 80, 20 ,20 );
+		roadSpaceGeometry = new THREE.PlaneGeometry( 5, 80, 20, 20 );
+        roadSpaceGeometry2 = new THREE.PlaneGeometry( 5, 80, 20, 20 );
+        roadSPaceGeometry3 = new THREE.PlaneGeometry( 5, 20, 20, 20 );
+        roadSpaceGeometry4 = new THREE.PlaneGeometry( 5, 20, 20, 20 );
+        railSpaceGeometry = new THREE.PlaneGeometry( 5, 80, 20, 20 ); //TODO: Spacebe rakni
 		
 		
         
@@ -357,6 +367,8 @@ uniform sampler2D texImage;
                 } );
 		//groundMaterial.bumpMap = groundTexture;
 		groundMaterial.map = groundTexture;
+		
+		
 		var railMaterial = new THREE.MeshBasicMaterial( {
                     
                     wireframe: false,
@@ -392,19 +404,43 @@ uniform sampler2D texImage;
 		material.uniforms.shininess = 70;
 		/**************************Textúrák vége***************************************/
 		
-		var groundMesh = new THREE.Mesh( groundGeometry, groundMaterial );
-		var groundMesh4 = new THREE.Mesh( groundGeometry4, groundMaterial );
-        var waterMesh = new THREE.Mesh( waterGeometry, material );
-        var roadMesh = new THREE.Mesh( roadGeometry, roadMaterial );
-        var roadMesh2 = new THREE.Mesh( roadGeometry2, roadMaterial );
-        var roadMesh3 = new THREE.Mesh( roadGeometry3, roadMaterial );
-        var roadMesh4 = new THREE.Mesh( roadGeometry4, roadMaterial );
-        var railmesh = new THREE.Mesh( railGeometry, railMaterial );
+		 groundMesh = new THREE.Mesh( groundGeometry, groundMaterial );
+		groundMesh.name = 'groundNormal';
+		 groundSpaceMesh = new THREE.Mesh( groundSpaceGeometry, groundMaterial );
+		groundSpaceMesh.name = 'groundSpace';
 		
+         waterMesh = new THREE.Mesh( waterGeometry, material );
+		waterMesh.name = 'waterNormal';
+         roadMesh = new THREE.Mesh( roadGeometry, roadMaterial );
+		roadMesh.name = 'roadNormal';
+         roadMesh2 = new THREE.Mesh( roadGeometry2, roadMaterial );
+		roadMesh2.name = 'roadNormal2';
+         roadMesh3 = new THREE.Mesh( roadGeometry3, roadMaterial );
+		roadMesh3.name = 'roadNormal3';
+         roadMesh4 = new THREE.Mesh( roadGeometry4, roadMaterial );
+		roadMesh4.name = 'roadNormal4';
+         railmesh = new THREE.Mesh( railGeometry, railMaterial );
+		railmesh.name = "railNormal";
+		
+		 waterSpaceMesh = new THREE.Mesh( waterSpaceGeometry, material );
+		waterSpaceMesh.name = 'waterSpace';
+         roadSpaceMesh = new THREE.Mesh( roadSpaceGeometry, roadMaterial );
+		roadSpaceMesh.name = 'roadSpace';
+         roadSpaceMesh2 = new THREE.Mesh( roadSpaceGeometry2, roadMaterial );
+		roadSpaceMesh2.name = 'roadSpace2';
+         roadSpaceMesh3 = new THREE.Mesh( roadSPaceGeometry3, roadMaterial );
+		roadSpaceMesh3.name = 'roadSpace3';
+         roadSpaceMesh4 = new THREE.Mesh( roadSpaceGeometry4, roadMaterial );
+		roadSpaceMesh4.name = 'roadSpace4';
+         railSpaceMesh = new THREE.Mesh( railSpaceGeometry, railMaterial );
+		railSpaceMesh.name = "railSpace";
 		
 		
 		roadMesh5 = roadMesh3.clone();
 		roadMesh6 = roadMesh4.clone();
+		
+		roadSpaceMesh5 = roadSpaceMesh3.clone();
+		roadSpaceMesh6 = roadSpaceMesh4.clone();
 		
 		
 		/********************Latte*******************************/
@@ -610,6 +646,50 @@ uniform sampler2D texImage;
 		
 		railmesh.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
 		
+		waterSpaceMesh.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		
+		
+        groundSpaceMesh.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		groundSpaceMesh.position.x = 44.9;
+		groundSpaceMesh.receiveShadow = true;
+		groundSpaceMesh.castShadow = true;
+		
+		
+		//groundMesh2.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		//groundMesh2.position.z = 19.9;
+		//groundMesh3.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		//groundMesh3.position.z = -19.9;
+		roadSpaceMesh.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		roadSpaceMesh.position.x = 31;
+		roadSpaceMesh.position.y = 0.1;
+		roadSpaceMesh2.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		roadSpaceMesh2.position.x = 25;
+		roadSpaceMesh2.position.y = 0.1;
+		roadSpaceMesh3.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		roadSpaceMesh3.position.x = 20;
+		roadSpaceMesh3.position.y = 0.1;
+		roadSpaceMesh3.position.z = -30;
+		
+		roadSpaceMesh4.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		roadSpaceMesh4.position.x = 36;
+		roadSpaceMesh4.position.y = 0.1;
+		roadSpaceMesh4.position.z = -30;
+		
+		roadSpaceMesh5.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		roadSpaceMesh5.position.x = 20;
+		roadSpaceMesh5.position.y = 0.1;
+		roadSpaceMesh5.position.z = 30;
+		
+		roadSpaceMesh6.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		roadSpaceMesh6.position.x = 36;
+		roadSpaceMesh6.position.y = 0.1;
+		roadSpaceMesh6.position.z = 30;
+		
+		railSpaceMesh.position.x = 50;
+		railSpaceMesh.position.y = 0.1;
+		
+		railSpaceMesh.rotation.x = -1.0 * THREE.Math.degToRad( 90 );
+		
 		
 		/************************Meshek vege********************************/
 		
@@ -711,15 +791,53 @@ uniform sampler2D texImage;
         }
 		if(event.keyCode == 83) { //s mint space lenyomasa
 			if(glitch){
-				if(scene.getObjectByName('particles'))
+				if(scene.getObjectByName('particles')){
 					scene.remove(cloud);
+					scene.remove(groundSpaceMesh);
+					scene.remove(waterSpaceMesh);
+					scene.remove(railSpaceMesh);
+					scene.remove(roadSpaceMesh);
+					scene.remove(roadSpaceMesh2);
+					scene.remove(roadSpaceMesh3);
+					scene.remove(roadSpaceMesh4);
+					scene.remove(roadSpaceMesh5);
+					scene.remove(roadSpaceMesh6);
+					
+					scene.add(groundMesh);
+					scene.add(waterMesh);
+					scene.add(railmesh);
+					scene.add(roadMesh);
+					scene.add(roadMesh2);
+					scene.add(roadMesh3);
+					scene.add(roadMesh4);
+				}
 				renderer.setClearColor( 0xcce0ff );
 				glitch = false;
 			}
 			else {
-				if(!scene.getObjectByName('particles'))
+				if(!scene.getObjectByName('particles')){
+					
+					scene.remove(groundMesh);
+					scene.remove(waterMesh);
+					scene.remove(railmesh);
+					scene.remove(roadMesh);
+					scene.remove(roadMesh2);
+					scene.remove(roadMesh3);
+					scene.remove(roadMesh4);
+					scene.remove(roadMesh5);
+					scene.remove(roadMesh6);
+					
+					scene.add(groundSpaceMesh);
+					scene.add(waterSpaceMesh);
+					scene.add(railSpaceMesh);
+					scene.add(roadSpaceMesh);
+					scene.add(roadSpaceMesh2);
+					scene.add(roadSpaceMesh3);
+					scene.add(roadSpaceMesh4);
+					scene.add(roadSpaceMesh5);
+					scene.add(roadSpaceMesh6);
 					createParticles();
-				
+				}
 				renderer.setClearColor( 0x000000 );
 				
 				glitch = true;
@@ -804,6 +922,7 @@ uniform sampler2D texImage;
 				}
 				else if (vehicleMesh.position.x >= 78){
 					//eredeti allapotba allitas
+					
 					vehicleMesh.position.set(32, 1, 38);
 					vehicleMesh.rotation.set(0,0,0);
 					vehicleMesh.rotation.y = 1.0 * THREE.Math.degToRad( 90 );
@@ -921,12 +1040,12 @@ uniform sampler2D texImage;
 			vehicleMesh.position.y -= 0.003;
 			vehicleMesh.rotation.y -= 0.001;
 		}
-		/*else if (vehicleMesh.position.x >= 78){
+		else if (vehicleMesh.position.x >= 78){
 			//eredeti allapotba allitas
-			vehicleMesh.position.set(32, 1, 38);
+			vehicleMesh.position.set(22.5, 0.5, -38);
 			vehicleMesh.rotation.set(0,0,0);
-			vehicleMesh.rotation.y = 1.0 * THREE.Math.degToRad( 90 );
-		}*/
+			vehicleMesh.rotation.y = -1.0 * THREE.Math.degToRad( 90 );
+		}
 			//
 	}
 
