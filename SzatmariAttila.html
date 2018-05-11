@@ -123,7 +123,7 @@ uniform sampler2D texImage;
 
         // Színtér létrehozása
         //scene = new THREE.Scene();
-		scene.fog = new THREE.Fog( 0xcce0ff, 500, 10000 );
+		//scene.fog = new THREE.Fog( 0xcce0ff, 500, 10000 );
 
         // Kamera létrehozása és vetítési paramétereinek beállítása
         camera = new THREE.PerspectiveCamera( 75, aspectRatio, 1, 1000 );
@@ -713,7 +713,7 @@ uniform sampler2D texImage;
 		dLight2.position.set( 0, 0, 180);
 		
 		scene.add( dLight2 );
-		scene.fog = new THREE.FogExp2( 0xCCCFBC, 0.0025 );
+		scene.fog = new THREE.FogExp2( 0xcce0ff, 0.0025 );
 		//var ambientLight = new THREE.AmbientLight( 0x282B2A, 0.5 ); //D6D6D6 - szürke | FDB813 - sárga | 282B2A - asphalt fekete
 		//scene.add( ambientLight );
 		//scene.fog = new THREE.FogExp2( 0xdfddd6, 0.01 );
@@ -1073,10 +1073,10 @@ uniform sampler2D texImage;
 			carMesh2.position.z = -38;
 			
 	   /*********************Vonat animalasa********************/	   
-	   if(tramtrainGroup.position.z > -35)
+	   if(tramtrainGroup.position.z > -60)
 			tramtrainGroup.position.z -= sinusSpeedChanger(sinusSpeed);
 		else{
-			tramtrainGroup.position.z = 28;
+			tramtrainGroup.position.z = 15;
 			
 		}
 	   
