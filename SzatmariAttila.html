@@ -3,14 +3,33 @@
 <head>
     <meta charset=utf-8>
     <title>Korhid</title>
-    <style>
-        body { margin: 0; overflow: hidden; }
-        canvas { width: 100%; height: 100% }
-    </style>
+    
+	<style type="text/css">
+			body { margin: 0; overflow: hidden; }
+			canvas { width: 100%; height: 100% }
+			
+			#footer { position: absolute; bottom: 10px; width: 100%; }
+			.h { color: #fb0 }
+			.c { display: inline; margin-left: 1em }
+			#footer { position: absolute; bottom: 10px; width: 100%; }
+			.t { color: #ff0000 }
+			.c { display: inline; margin-left: 1em }
+		</style>
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 </head>
 
 <body onload="init()">
+
+<div id="footer">
+			<div class="c">
+			 <span class="t">Text:</span> <span class="h">p</span>
+			</div>
+
+			<div class="c">
+			<span class="t">Go to space:</span> <span class="h">s</span>
+			</div>
+</div>
+
 <script src="js/three.min.js"></script>
 <script src="js/stats.min.js"></script>
 <script src="js/TrackballControls.js"></script>
@@ -27,6 +46,8 @@
 <script type="text/javascript" src="libs/postprocessing/RenderPass.js"></script>
 <script type="text/javascript" src="libs/postprocessing/GlitchPass.js"></script>
 <script type="text/javascript" src="libs/postprocessing/DigitalGlitch.js"></script>
+<script src="js/Reflector.js"></script>
+<script src="js/Water.js"></script>
 
 <script id="vertexShader" type="x-shader/x-vertex">
 uniform float time;
@@ -65,7 +86,7 @@ uniform sampler2D texImage;
     var material;
     var stats;
     var controls;
-    var waterGeometry, groundGeometry;
+    var waterGeometry, groundGeometry, water, waterSpace;
     var railGeometry;
     var groundGeometry4;
     var roadGeometry, roadGeometry2;
@@ -127,7 +148,7 @@ uniform sampler2D texImage;
 
         // Kamera létrehozása és vetítési paramétereinek beállítása
         camera = new THREE.PerspectiveCamera( 75, aspectRatio, 1, 1000 );
-        camera.position.set( 10, 40, 80 );
+        camera.position.set( -35, 20, 80 );
         camera.lookAt( scene.position );
 		
 		holegBallonGroup = new THREE.Object3D();
@@ -483,8 +504,8 @@ uniform sampler2D texImage;
 			latheMesh.rotation.x = THREE.Math.degToRad(180);
 			latheMesh.scale.set(0.2,0.2,0.2);
 			latheMesh.position.y = 30;
-			var balloonTexture = textureLoader.load( 'Assets/balloon.jpg' ); //Ez nem akart mukodni
-			latheMesh.map = balloonTexture;
+			//var balloonTexture = textureLoader.load( 'Assets/balloon.jpg' ); //Ez nem akart mukodni
+			//latheMesh.map = balloonTexture;
 			latheMesh.castShadow = true;
 			latheMesh.receiveShadow = true;
             scene.add(latheMesh);
@@ -729,7 +750,7 @@ uniform sampler2D texImage;
         scene.add( roadMesh5 );
         scene.add( roadMesh6 );
         
-        scene.add( waterMesh );
+        //scene.add( waterMesh );
 		
 
         // Az ablak későbbi átméretezése esetén visszahívható függvény megadása
@@ -760,8 +781,63 @@ uniform sampler2D texImage;
         composer.addPass(renderPass);
         composer.addPass(effectGlitch);
 
+		//Water
+		waterGeometry = new THREE.PlaneBufferGeometry( 5000,5000 );
+		water = new THREE.Water(
+					waterGeometry,
+					{
+						textureWidth: 512,
+						textureHeight: 512,
+						waterNormals: new THREE.TextureLoader().load( 'Assets/waternormals.jpg', function ( texture ) {
+							texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+						}),
+						alpha: 1.0,
+						//sunDirection: light.position.clone().normalize(),
+						sunColor: 0xffffff,
+						waterColor: 0x001e0f,
+						distortionScale:  3.7,
+						fog: scene.fog !== undefined
+					}
+				);
+				water.rotation.x = - Math.PI / 2;
+				water.position.y = 0.45;
+				water.position.x = -2485;
+				
+		waterSpace = new THREE.Water(
+					waterSpaceGeometry,
+					{
+						textureWidth: 512,
+						textureHeight: 512,
+						waterNormals: new THREE.TextureLoader().load( 'Assets/waternormals.jpg', function ( texture ) {
+							texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+						}),
+						alpha: 1.0,
+						//sunDirection: light.position.clone().normalize(),
+						sunColor: 0xffffff,
+						waterColor: 0x001e0f,
+						distortionScale:  3.7,
+						fog: scene.fog !== undefined
+					}
+				);
+				waterSpace.rotation.x = - Math.PI / 2;
+				
+				
+		
+				scene.add( water );
+		
         // Első képkocka rajzolása
         //render();
+		/*var mirrorGeometry = new THREE.CircleBufferGeometry( 40, 64 );
+		var verticalMirror = new THREE.Reflector( mirrorGeometry, {
+					clipBias: 0.003,
+					textureWidth: WIDTH * window.devicePixelRatio,
+					textureHeight: HEIGHT * window.devicePixelRatio,
+					color: 0x889999,
+					recursion: 1
+				} );
+				verticalMirror.position.y = 1;
+				verticalMirror.position.z = - 20;
+				scene.add( verticalMirror );*/
     }
 
     function handleWindowResize() {
@@ -796,7 +872,7 @@ uniform sampler2D texImage;
 				if(scene.getObjectByName('particles')){
 					scene.remove(cloud);
 					scene.remove(groundSpaceMesh);
-					scene.remove(waterSpaceMesh);
+					scene.remove(waterSpace);
 					scene.remove(railSpaceMesh);
 					scene.remove(roadSpaceMesh);
 					scene.remove(roadSpaceMesh2);
@@ -806,7 +882,7 @@ uniform sampler2D texImage;
 					scene.remove(roadSpaceMesh6);
 					
 					scene.add(groundMesh);
-					scene.add(waterMesh);
+					scene.add(water);
 					scene.add(railmesh);
 					scene.add(roadMesh);
 					scene.add(roadMesh2);
@@ -820,7 +896,7 @@ uniform sampler2D texImage;
 				if(!scene.getObjectByName('particles')){
 					
 					scene.remove(groundMesh);
-					scene.remove(waterMesh);
+					scene.remove(water);
 					scene.remove(railmesh);
 					scene.remove(roadMesh);
 					scene.remove(roadMesh2);
@@ -830,7 +906,7 @@ uniform sampler2D texImage;
 					scene.remove(roadMesh6);
 					
 					scene.add(groundSpaceMesh);
-					scene.add(waterSpaceMesh);
+					scene.add(waterSpace);
 					scene.add(railSpaceMesh);
 					scene.add(roadSpaceMesh);
 					scene.add(roadSpaceMesh2);
@@ -1097,6 +1173,8 @@ uniform sampler2D texImage;
 
        material.uniforms.time.value = time;
 
+	   water.material.uniforms.time.value += 0.5/ 60.0;
+	   waterSpace.material.uniforms.time.value += 0.5 / 60.0;
 
         // Újabb képkocka rajzolásának kérése.
         // Maximálisan 60 FPS-t biztosít a rendszer.
