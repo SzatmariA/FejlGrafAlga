@@ -318,8 +318,8 @@ uniform sampler2D texImage;
 			VhelyTextMesh = new THREE.Mesh( VhelyGeometry, textMaterial );
 			TramTrainTextMesh = new THREE.Mesh( TramTrainGeometry, textMaterial );
 			
-			SzegedTextMesh.position.set(20, 20, 40);
-			VhelyTextMesh.position.set(0, 20, -40);
+			SzegedTextMesh.position.set(20, 20, -40);
+			VhelyTextMesh.position.set(10, 20, 40);
 			TramTrainTextMesh.position.set(50, 20, 28);
 			TramTrainTextMesh.name = 'tramtraintext';
 			tramtrainGroup.add(TramTrainTextMesh);
