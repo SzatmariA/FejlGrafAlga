@@ -713,6 +713,7 @@ uniform sampler2D texImage;
 		dLight2.position.set( 0, 0, 180);
 		
 		scene.add( dLight2 );
+		scene.fog = new THREE.FogExp2( 0xCCCFBC, 0.0025 );
 		//var ambientLight = new THREE.AmbientLight( 0x282B2A, 0.5 ); //D6D6D6 - szürke | FDB813 - sárga | 282B2A - asphalt fekete
 		//scene.add( ambientLight );
 		//scene.fog = new THREE.FogExp2( 0xdfddd6, 0.01 );
