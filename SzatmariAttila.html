@@ -986,9 +986,6 @@ uniform sampler2D texImage;
 					helicopter=false;
 				}else{
 					sound.play();
-					
-					
-					console.log("you tried");
 					helicopter=true;
 				}
 				
@@ -1253,9 +1250,9 @@ uniform sampler2D texImage;
 	   
 	   if(scene.getObjectByName('particles')){
 			
-			if(x <= 70 && y <=60){
+			if(x <= 40 || y <=40){
 				x += 0.25;
-				y +=0.25;
+				y +=0.15;
 				console.log("x: " + x + " y: " + y);
 				camera.position.set( x, y, 80 );
 			}
