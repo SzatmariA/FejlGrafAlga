@@ -109,7 +109,7 @@ uniform sampler2D texImage;
 	var effectGlitch;
 	var cloud;
 	var groundMesh, waterMesh, groundMesh2, groundMesh3, groundSpaceMesh, roadMesh, roadMesh2, roadMesh3, roadMesh4;
-	var railmesh, railSpaceMesh, waterSpaceMesh, roadSpaceMesh, roadSpaceMesh2, roadSpaceMesh3, roadSpaceMesh4;
+	var railmesh, railSpaceMesh, waterSpaceMesh, roadSpaceMesh, roadSpaceMesh2, roadSpaceMesh3, roadSpaceMesh4, earthMesh;
 
     function init() {
 	
@@ -332,6 +332,16 @@ uniform sampler2D texImage;
 			
 			scene.add( tramtrainGroup );
 			
+		} );
+		
+		//earth
+		var earthTextureLoader = new THREE.TextureLoader(manager);
+		earthTextureLoader.load( 'Assets/land_ocean_ice_cloud_2048.jpg', function ( texture ) {
+					var geometry = new THREE.SphereGeometry( 10, 10, 10 );
+					var material = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0.5 } );
+					earthMesh = new THREE.Mesh( geometry, material );
+					
+					earthMesh.position.set(-40, -20 , -100);
 		} );
 		 
 		
@@ -880,6 +890,7 @@ uniform sampler2D texImage;
 					scene.remove(roadSpaceMesh4);
 					scene.remove(roadSpaceMesh5);
 					scene.remove(roadSpaceMesh6);
+					scene.remove(earthMesh);
 					
 					scene.add(groundMesh);
 					scene.add(water);
@@ -888,6 +899,8 @@ uniform sampler2D texImage;
 					scene.add(roadMesh2);
 					scene.add(roadMesh3);
 					scene.add(roadMesh4);
+					scene.add(holegBallonGroup);
+					
 				}
 				renderer.setClearColor( 0xcce0ff );
 				glitch = false;
@@ -904,6 +917,8 @@ uniform sampler2D texImage;
 					scene.remove(roadMesh4);
 					scene.remove(roadMesh5);
 					scene.remove(roadMesh6);
+					scene.remove(holegBallonGroup);
+					
 					
 					scene.add(groundSpaceMesh);
 					scene.add(waterSpace);
@@ -914,6 +929,7 @@ uniform sampler2D texImage;
 					scene.add(roadSpaceMesh4);
 					scene.add(roadSpaceMesh5);
 					scene.add(roadSpaceMesh6);
+					scene.add(earthMesh);
 					createParticles();
 				}
 				renderer.setClearColor( 0x000000 );
@@ -1175,6 +1191,7 @@ uniform sampler2D texImage;
 
 	   water.material.uniforms.time.value += 0.5/ 60.0;
 	   waterSpace.material.uniforms.time.value += 0.5 / 60.0;
+	   earthMesh.rotation.y -= 0.005;
 
         // Újabb képkocka rajzolásának kérése.
         // Maximálisan 60 FPS-t biztosít a rendszer.
