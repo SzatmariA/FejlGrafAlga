@@ -28,6 +28,10 @@
 			<div class="c">
 			<span class="t">Go to space:</span> <span class="h">s</span>
 			</div>
+			
+			<div class="c">
+			<span class="t">Ride the helicopter:</span> <span class="h">h</span>
+			</div>
 </div>
 
 <script src="js/three.min.js"></script>
@@ -110,6 +114,12 @@ uniform sampler2D texImage;
 	var cloud;
 	var groundMesh, waterMesh, groundMesh2, groundMesh3, groundSpaceMesh, roadMesh, roadMesh2, roadMesh3, roadMesh4;
 	var railmesh, railSpaceMesh, waterSpaceMesh, roadSpaceMesh, roadSpaceMesh2, roadSpaceMesh3, roadSpaceMesh4, earthMesh;
+	var atmosphereMesh;
+	var x = -35;
+	var y = 20;
+	var helicopter = false;
+	var heliX =150, heliY = 80, heliZ = -150;
+	//var sound;
 
     function init() {
 	
@@ -150,6 +160,9 @@ uniform sampler2D texImage;
         camera = new THREE.PerspectiveCamera( 75, aspectRatio, 1, 1000 );
         camera.position.set( -35, 20, 80 );
         camera.lookAt( scene.position );
+		/*camera.add( listener );
+		var listener = new THREE.AudioListener();
+		sound = new THREE.Audio( listener );*/
 		
 		holegBallonGroup = new THREE.Object3D();
 		tramtrainGroup = new THREE.Object3D();
@@ -187,6 +200,7 @@ uniform sampler2D texImage;
 		var loader = new THREE.JSONLoader(manager);
 		var loaderOBJ = new THREE.OBJMTLLoader(manager);
 		var loaderFont = new THREE.FontLoader(manager);
+		//var audioLoader = new THREE.AudioLoader(manager);
 		
 		loader.load( 'Assets/TheKorhid.json', function ( geometry ) {
 			
@@ -343,6 +357,14 @@ uniform sampler2D texImage;
 					
 					earthMesh.position.set(-40, -20 , -100);
 		} );
+		
+		//legkor
+		
+		var atmospheregeometry = new THREE.SphereGeometry( 70, 70, 70 );
+		var atmoshperematerial = new THREE.MeshBasicMaterial({opacity: 0.2,transparent: true});
+		atmosphereMesh = new THREE.Mesh( atmospheregeometry, atmoshperematerial );
+		atmosphereMesh.position.set(30, 0, 0);
+		
 		 
 		
 		
@@ -891,6 +913,7 @@ uniform sampler2D texImage;
 					scene.remove(roadSpaceMesh5);
 					scene.remove(roadSpaceMesh6);
 					scene.remove(earthMesh);
+					scene.remove(atmosphereMesh);
 					
 					scene.add(groundMesh);
 					scene.add(water);
@@ -900,6 +923,7 @@ uniform sampler2D texImage;
 					scene.add(roadMesh3);
 					scene.add(roadMesh4);
 					scene.add(holegBallonGroup);
+					camera.position.set( -35, 20, 80 );
 					
 				}
 				renderer.setClearColor( 0xcce0ff );
@@ -930,13 +954,34 @@ uniform sampler2D texImage;
 					scene.add(roadSpaceMesh5);
 					scene.add(roadSpaceMesh6);
 					scene.add(earthMesh);
+					scene.add(atmosphereMesh);
 					createParticles();
+					
+					
 				}
 				renderer.setClearColor( 0x000000 );
 				
 				glitch = true;
 			}
+			
+			
 		}
+		if(event.keyCode == 72){// h lenyomasa
+				if(helicopter){
+					heliX =150;
+					heliY = 80;
+					heliZ = -150;
+					camera.position.set( -35, 20, 80 );
+					helicopter=false;
+				}else{
+					helicopter=true;
+					
+					console.log("you tried");
+				}
+				
+				
+		}
+			
 	}
 
     function addStatsObject() {
@@ -1192,6 +1237,25 @@ uniform sampler2D texImage;
 	   water.material.uniforms.time.value += 0.5/ 60.0;
 	   waterSpace.material.uniforms.time.value += 0.5 / 60.0;
 	   earthMesh.rotation.y -= 0.005;
+	   
+	   if(scene.getObjectByName('particles')){
+			
+			if(x <= 70 && y <=60){
+				x += 0.25;
+				y +=0.25;
+				console.log("x: " + x + " y: " + y);
+				camera.position.set( x, y, 80 );
+			}
+				
+	   }
+	   
+	   if(helicopter){
+			
+			camera.position.set( heliX, 80, heliZ );
+			heliX -= 1;
+			heliZ += 1;
+			console.log("x: " + heliX + " z: " + heliZ);
+	   }
 
         // Újabb képkocka rajzolásának kérése.
         // Maximálisan 60 FPS-t biztosít a rendszer.
